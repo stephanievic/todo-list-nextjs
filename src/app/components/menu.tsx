@@ -18,7 +18,7 @@ export default function Menu () {
                         <Link href={'/home'} className='text-2xl font-medium text-white-100 hover:text-purple-100'> Página inicial </Link>
                         <Image src={ArrowDown} alt='arrow down'/>
                     </div>
-                    <Link href={'#'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Etiquetas</Link>
+                    <Link href={'/label'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Etiquetas</Link>
                     <Link href={'#'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Perfil</Link>
                 </div>
                 <button className='flex items-center gap-3 text-2xl font-medium text-white-100 hover:text-purple-100'><Image src={LogOut} alt="Box Arrow Right"/>
