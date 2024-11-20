@@ -20,6 +20,7 @@ export default function Home() {
     const router = useRouter()
     const dateNow = new Date()
 
+
     const [searchList, setSearchList] = useState("")
     const [lists, setLists] = useState<List[]|undefined>()
     const [listsFavorites, setListsFavorites] = useState<List[]>()
@@ -108,6 +109,8 @@ export default function Home() {
                         )
                 }
             </main >
+
+            
         </div >
     )
 }
