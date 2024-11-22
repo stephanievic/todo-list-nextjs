@@ -29,7 +29,7 @@ export default function Login () {
 
                     <Input label="Senha" type="password" placeholder="Digite a senha cadastrada" value={setPassword}/>
 
-                    <Button title="Entrar"/>
+                    <Button variant="primary" type="submit">Entrar</Button>
                 </form>
 
                 <Link href={"/auth/register"} className="text-sm text-black-100 text-center underline hover:text-purple-300">Ainda não tem login? Ir para cadastro.</Link>

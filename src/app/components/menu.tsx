@@ -13,8 +13,12 @@ import Button from './button'
 export default function Menu() {
     const [isOpenModalLogout, setIsOpenModalLogout] = useState(false)
 
-    const onClose = () => {
+    const closeModalLogout = () => {
         setIsOpenModalLogout(false)
+    }
+
+    const openModalLogout = () => {
+        setIsOpenModalLogout(true)
     }
 
     const handleLogout = () => {
@@ -36,17 +40,22 @@ export default function Menu() {
                     <Link href={'/label'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Etiquetas</Link>
                     <Link href={'#'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Perfil</Link>
                 </div>
-                <button onClick={() => setIsOpenModalLogout(true)} className='flex items-center gap-3 text-2xl font-medium text-white-100 hover:text-purple-100'><Image src={LogOut} alt="Box Arrow Right" />
+                <button onClick={openModalLogout} className='flex items-center gap-3 text-2xl font-medium text-white-100 hover:text-purple-100'><Image src={LogOut} alt="Box Arrow Right" />
                     Sair
                 </button>
             </div>
 
             {
                 isOpenModalLogout && (
-                    <Modal title="Você deseja sair?" onClose={onClose}>
-                        <div className='space-x-5 mx-auto'>
-                            <Button onClick={handleLogout} title='Sair' className='bg-purple-300'/>
-                            <Button onClick={onClose} title='Cancelar' className='bg-transparent'/>
+                    <Modal title="Você deseja sair?" onClose={closeModalLogout}>
+                        <div className='flex gap-5 mx-auto'>
+                            <Button variant='primary' onClick={handleLogout} className='bg-purple-300'>
+                                Sair
+                            </Button>
+                            
+                            <Button variant='secondary' onClick={closeModalLogout} className='bg-transparent'>
+                                Cancelar
+                            </Button>
                         </div>
                     </Modal>
                 )

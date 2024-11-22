@@ -38,7 +38,7 @@ export default function Register () {
 
                     <Input label="Confirmar senha" type="password" placeholder="Confirme a senha digitada no campo anterior." value={setConfirmPassword}/>
 
-                    <Button title="Cadastrar"/>
+                    <Button variant="primary" type="submit">Cadastrar</Button>
                 </form>
 
                 <Link href={"/auth/login"} className="text-sm text-black-100 text-center underline hover:text-purple-300">Já possui uma conta? Faça login.</Link>
