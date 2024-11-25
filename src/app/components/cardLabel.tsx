@@ -1,14 +1,42 @@
 import TagIcon from "../../../public/Tag.svg"
 import Image from "next/image"
+import { tv, VariantProps } from 'tailwind-variants';
 
-interface CardLabelProps {
-    name: string
+const cardLabelVariants = tv({
+    base: "flex gap-2 border cursor-pointer hover:opacity-80",
+
+    variants: {
+        color: {
+            primary: "text-purple-100 border-purple-100",
+            secondary: "text-purple-200 border-purple-200"
+        },
+
+        size: {
+            small: "w-fit px-3 py-1 rounded-lg",
+            large: "w-[200px] p-3 rounded-xl"
+        },
+
+
+        /* icon: {
+            small: "size-5",
+            large: "size-6"
+        }*/    
+    },
+
+    defaultVariants: {
+        color: 'primary',
+        size: 'large'
+    }
+})
+
+interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
+    name: string 
     id: number
 }
 
-export default function CardLabel ({name, id}:CardLabelProps) {
+export default function CardLabel ({name, id, color, size}:CardLabelProps) {
     return (
-        <div className="flex gap-2 w-[200px] p-3 text-purple-100 border border-purple-100 rounded-xl cursor-pointer hover:opacity-80">
+        <div className={cardLabelVariants({color, size})}>
             <Image src={TagIcon} alt="icone de tag"/>
             <p>{name}</p>
         </div>
