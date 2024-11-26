@@ -1,0 +1,34 @@
+import { Dispatch, SetStateAction } from "react";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { ptBR } from "react-day-picker/locale";
+import "react-day-picker/style.css";
+
+interface CalendarProps {
+    selected?: Date
+    setSelected?: Dispatch<SetStateAction<Date | undefined>>
+    onClose: () => void
+}
+
+export default function Calendar({ selected, setSelected, onClose }: CalendarProps) {
+    const defaultClassNames = getDefaultClassNames()
+    return (
+        <div onClick={onClose} className="fixed inset-0 h-screen w-screen flex items-center justify-center bg-black-200 bg-opacity-75">
+            <div onClick={(event) => event.stopPropagation()}>
+                <DayPicker
+                    mode="single"
+                    locale={ptBR}
+                    selected={selected}
+                    onSelect={setSelected}
+                    classNames={{
+                        today: `text-purple-100`,
+                        selected: `border border-purple-100 rounded-full`, 
+                        // root: `${defaultClassNames.root} shadow-lg p-5`, 
+                        chevron: `${defaultClassNames.chevron} text-purple-100` 
+                    }}
+
+                    className="bg-black-200 p-4 border border-purple-100 rounded-2xl"
+                />
+            </div>
+        </div>
+    )
+};
