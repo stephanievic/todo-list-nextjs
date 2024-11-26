@@ -9,23 +9,23 @@ import Calendar from "./calendar";
 import { useState } from "react";
 import { setPriority } from "os";
 
-interface CardTaskProps {
+export interface CardTaskProps {
     id: number
     name: string
     isChecked: boolean
-    priority?: number
+    priority: number | null
     dateToComplete: Date | undefined
 }
 
 export default function CardTask({ id, name, isChecked, priority, dateToComplete }: CardTaskProps) {
     const [dateTask, setDateTask] = useState<Date | undefined>(dateToComplete)
-    const [check, SetCheck] = useState(isChecked)
-    const [priorityTask, setPriorityTask] = useState(priority)
+    const [check, SetCheck] = useState<boolean>(isChecked)
+    const [priorityTask, setPriorityTask] = useState<number | null>(priority)
 
     const priorityLabel = ['Baixa', 'Média', 'Alta']
 
-    const [isOpenCalendarModal, setIsOpenCalendarModal] = useState(false)
-    const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState(false)
+    const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
+    const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
     const openCalendarModal = () => {
         setIsOpenCalendarModal(true)
@@ -50,6 +50,7 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
     const handlePriority = (value: number) => {
         setPriorityTask(value)
         
+        // closePrioritySelect()
         setIsOpenPrioritySelect(false)
     }
 
@@ -75,9 +76,9 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
                             {dateTask && dateTask.toLocaleDateString()}
                         </button>
 
-                        <div onClick={openPrioritySelect} className="relative flex gap-2 items-center px-3 text-xs text-white-100 cursor-pointer">
+                        <div onClick={openPrioritySelect} className="w-20 relative flex gap-2 items-center px-3 text-xs text-white-100 cursor-pointer">
                             <Image src={PriorityIcon} alt="calendar icon" />
-                            {priorityTask && priorityLabel[priorityTask]}
+                            {priorityTask !== null && priorityLabel[priorityTask]}
 
                             {
                                 isOpenPrioritySelect && (

@@ -2,18 +2,19 @@
 
 import Calendar from "@/app/components/calendar";
 import CardLabel from "@/app/components/cardLabel";
+import CardTask, { CardTaskProps } from "@/app/components/cardTask";
 import Menu from "@/app/components/menu";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarIcon from "../../../../public/CalendarEvent.svg";
 import PriorityIcon from "../../../../public/ExclamationCircle.svg";
 import EditIcon from "../../../../public/PencilSquare.svg";
 import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
-import CardTask from "@/app/components/cardTask";
 
 export default function List() {
+    const [tasks, setTasks] = useState<CardTaskProps[]>()
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState(false)
 
@@ -25,15 +26,33 @@ export default function List() {
         setIsOpenCalendarModal(false)
     }
 
+    useEffect(() => {
+        setTasks([{
+            id: 1,
+            name: "Rotina",
+            isChecked: false,
+            priority: 2,
+            dateToComplete: undefined
+        }, {
+            id: 2,
+            name: "Rotina",
+            isChecked: false,
+            priority: 2,
+            dateToComplete: undefined
+        }])
+    }, [])
+
     return (
         <div className='min-h-screen flex bg-black-200'>
             <Menu />
 
-            <main className='w-full ml-[312px] p-[60px] space-y-5'>
+            <main className='w-full max-h-screen ml-[312px] p-[60px] space-y-5'>
                 <div className="space-y-5 m-0">
                     <div className="text-6xl">❤️</div>
+
                     <div className="flex justify-between items-end">
                         <h1 className="font-bold text-4xl text-white-100">Nova lista</h1>
+
                         <div className="flex gap-5">
                             <Image src={StarFavorite} alt="Favorite icon" />
                             <Image src={EditIcon} alt="Edit list icon" />
@@ -44,6 +63,7 @@ export default function List() {
 
                 <div className="flex gap-3 items-center">
                     <CardLabel name={"Book"} id={0} color="secondary" size="small" />
+
                     <Image src={AddLabel} alt={"Plus circle"} className="size-7" />
                 </div>
 
@@ -55,6 +75,7 @@ export default function List() {
                             <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
                                 {newTaskDate ? newTaskDate.toLocaleDateString() : `Data de realização`} <Image src={CalendarIcon} alt="calendar icon" />
                             </button>
+
                             <button className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
                                 Prioridade <Image src={PriorityIcon} alt="calendar icon" />
                             </button>
@@ -65,12 +86,16 @@ export default function List() {
                         </button>
                     </div>
                 </div>
-
-                <CardTask id={1} isChecked={false} dateToComplete={undefined} name="Amor" priority={1}/>
+                
+                {
+                    tasks?.map((task, index) => (
+                        <CardTask key={index} id={task.id} isChecked={task.isChecked} dateToComplete={task.dateToComplete} name={task.name} priority={task.priority} />
+                    ))
+                }
             </main>
 
             {
-                isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal}/>
+                isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal} />
             }
         </div>
     )
