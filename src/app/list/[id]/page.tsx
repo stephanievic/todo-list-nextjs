@@ -1,22 +1,32 @@
 'use client'
 
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+import Menu from "@/app/components/menu";
+import Button from "@/app/components/button";
 import Calendar from "@/app/components/calendar";
 import CardLabel from "@/app/components/cardLabel";
 import CardTask, { CardTaskProps } from "@/app/components/cardTask";
-import Menu from "@/app/components/menu";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import Modal from "@/app/components/modal";
+
 import CalendarIcon from "../../../../public/CalendarEvent.svg";
 import PriorityIcon from "../../../../public/ExclamationCircle.svg";
 import EditIcon from "../../../../public/PencilSquare.svg";
 import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
+import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
 
 export default function List() {
     const [tasks, setTasks] = useState<CardTaskProps[]>()
     const [newTaskDate, setNewTaskDate] = useState<Date>()
+
+    const [changeIsFavorited, setChangeIsFavorited] = useState<boolean>()
+
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState(false)
+    const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState(false)
+    const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState(false)
 
     const openCalendarModal = () => {
         setIsOpenCalendarModal(true)
@@ -24,6 +34,22 @@ export default function List() {
 
     const closeCalendarModal = () => {
         setIsOpenCalendarModal(false)
+    }
+
+    const openDeleteListModal = () => {
+        setIsOpenDeleteListModal(true)
+    }
+
+    const closeDeleteListModal = () => {
+        setIsOpenDeleteListModal(false)
+    }
+
+    const openAddLabelModal = () => {
+        setIsOpenAddLabelModal(true)
+    }
+
+    const closeAddLabelModal = () => {
+        setIsOpenAddLabelModal(false)
     }
 
     useEffect(() => {
@@ -54,9 +80,11 @@ export default function List() {
                         <h1 className="font-bold text-4xl text-white-100">Nova lista</h1>
 
                         <div className="flex gap-5">
-                            <Image src={StarFavorite} alt="Favorite icon" />
-                            <Image src={EditIcon} alt="Edit list icon" />
-                            <Image src={DeleteIcon} alt="Delete list icon" />
+                            <StarFavorite className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            <StarFilled className="cursor-pointer hover:opacity-75 text-purple-300" />
+
+                            <EditIcon onClick={openAddLabelModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            <DeleteIcon onClick={openDeleteListModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
                         </div>
                     </div>
                 </div>
@@ -64,7 +92,7 @@ export default function List() {
                 <div className="flex gap-3 items-center">
                     <CardLabel name={"Book"} id={0} color="secondary" size="small" />
 
-                    <Image src={AddLabel} alt={"Plus circle"} className="size-7" />
+                    <AddLabel onClick={openAddLabelModal} className="size-7 cursor-pointer hover:opacity-75" />
                 </div>
 
                 <div className="flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
@@ -73,11 +101,14 @@ export default function List() {
                     <div className="flex justify-between">
                         <div className="flex gap-3">
                             <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                {newTaskDate ? newTaskDate.toLocaleDateString() : `Data de realização`} <Image src={CalendarIcon} alt="calendar icon" />
+                                {newTaskDate ? newTaskDate.toLocaleDateString() : `Data de realização`}
+
+                                <CalendarIcon />
                             </button>
 
                             <button className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                Prioridade <Image src={PriorityIcon} alt="calendar icon" />
+                                Prioridade 
+                                <PriorityIcon />
                             </button>
                         </div>
 
@@ -86,7 +117,7 @@ export default function List() {
                         </button>
                     </div>
                 </div>
-                
+
                 {
                     tasks?.map((task, index) => (
                         <CardTask key={index} id={task.id} isChecked={task.isChecked} dateToComplete={task.dateToComplete} name={task.name} priority={task.priority} />
@@ -96,6 +127,36 @@ export default function List() {
 
             {
                 isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal} />
+            }
+
+            {
+                isOpenDeleteListModal && (
+                    <Modal title="Excluir lista" onClose={closeDeleteListModal}>
+                        <p className="text-base text-black-200">Ao confirmar você excluirá a lista permanentemente. Deseja continuar?</p>
+
+                        <div className="flex justify-center gap-5">
+                            <Button>Confirmar</Button>
+
+                            <Button onClick={closeDeleteListModal} variant="secondary">Cancelar</Button>
+                        </div>
+                    </Modal>
+                )
+            }
+
+            {
+                isOpenAddLabelModal && (
+                    <Modal title="Adicionar etiqueta" onClose={closeAddLabelModal}>
+                        <div className="flex gap-2 items-center">
+                            <input type="checkbox" id="label1" name="label1" value={1} className="h-5 w-5" />
+
+                            <label htmlFor="label1" className="font-bold text-black-200">Book</label>
+                        </div>
+
+                        <div className="flex justify-center gap-5">
+                            <Button>Salvar</Button>
+                        </div>
+                    </Modal>
+                )
             }
         </div>
     )

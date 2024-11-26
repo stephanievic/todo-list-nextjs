@@ -1,5 +1,4 @@
 import TagIcon from "../../../public/Tag.svg"
-import Image from "next/image"
 import { tv, VariantProps } from 'tailwind-variants';
 
 const cardLabelVariants = tv({
@@ -37,7 +36,7 @@ interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
 export default function CardLabel ({name, id, color, size}:CardLabelProps) {
     return (
         <div className={cardLabelVariants({color, size})}>
-            <Image src={TagIcon} alt="icone de tag"/>
+            <TagIcon />
             <p>{name}</p>
         </div>
     )

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@svgr/webpack": "^8.1.0",
     "bootstrap-icons": "^1.11.3",
     "next": "15.0.3",
     "react": "^18.3.1",

@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 import X from '../../../public/X.svg'
 
 interface ModalProps {
@@ -17,7 +15,7 @@ export default function Modal({ title, children, onClose }: ModalProps) {
                 <div className="flex justify-between">
                     <h1 className="text-4xl font-bold text-purple-400">{title}</h1>
 
-                    <Image onClick={onClose} src={X} alt="Botão de sair" className="cursor-pointer hover:opacity-80"/>
+                    <X onClick={onClose} className="cursor-pointer hover:opacity-80"/>
                 </div>
 
 
