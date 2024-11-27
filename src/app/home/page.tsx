@@ -1,14 +1,14 @@
 "use client"
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
 import Menu from "../components/menu";
 import Search from "../components/search"
 import CardList from "../components/cardList";
 
-import PerfilIcon from "../../../public/PerfilIconEx.png"
-
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import PerfilIcon from "../../../public/PerfilIconEx.png";
 
 interface List {
     icon: string
@@ -20,9 +20,8 @@ export default function Home() {
     const router = useRouter()
     const dateNow = new Date()
 
-
     const [searchList, setSearchList] = useState("")
-    const [lists, setLists] = useState<List[]|undefined>()
+    const [lists, setLists] = useState<List[] | undefined>()
     const [listsFavorites, setListsFavorites] = useState<List[]>()
 
     const addList = () => {
@@ -35,10 +34,10 @@ export default function Home() {
             { icon: "❤️", title: "Vida", id: 2 }
         ]),
 
-        setListsFavorites([
-            { icon: "👩", title: "Rotina", id: 1 },
-            { icon: "❤️", title: "Vida", id: 2 }
-        ])
+            setListsFavorites([
+                { icon: "👩", title: "Rotina", id: 1 },
+                { icon: "❤️", title: "Vida", id: 2 }
+            ])
     }, [])
 
     const searchFiltered = lists?.filter((list) => list.title.toLowerCase().includes(searchList.toLowerCase())) ?? []
@@ -66,19 +65,19 @@ export default function Home() {
                             {
                                 searchFiltered?.length > 0 ? (
                                     <div className="text-white-100">
-                                        {searchFiltered?.map((search, index) =>(
+                                        {searchFiltered?.map((search, index) => (
                                             <CardList key={index} icon={search.icon} title={search.title} id={search.id} />
                                         ))}
                                     </div>
-                                ):
-                                (
-                                    <div >
-                                        <p className="text-purple-200">Não foi encontrada nenhuma lista com este nome.</p>
-                                    </div>
-                                )
+                                ) :
+                                    (
+                                        <div >
+                                            <p className="text-purple-200">Não foi encontrada nenhuma lista com este nome.</p>
+                                        </div>
+                                    )
                             }
                         </div>
-                        
+
                     ) :
                         (
                             <div className="space-y-20">
@@ -87,12 +86,12 @@ export default function Home() {
                                     <div className="flex flex-wrap gap-10">
                                         {
                                             listsFavorites?.map((listFavorite, index) => (
-                                                <CardList key={index} icon={listFavorite.icon} title={listFavorite.title} id={listFavorite.id}/>
+                                                <CardList key={index} icon={listFavorite.icon} title={listFavorite.title} id={listFavorite.id} />
                                             ))
                                         }
                                     </div>
 
-                                </section> 
+                                </section>
 
                                 <section className="space-y-10">
                                     <h2 className="text-3xl font-medium text-white-100">Todas as suas listas</h2>
@@ -109,8 +108,6 @@ export default function Home() {
                         )
                 }
             </main >
-
-            
         </div >
     )
 }

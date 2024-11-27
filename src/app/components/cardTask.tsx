@@ -15,9 +15,10 @@ export interface CardTaskProps {
     isChecked: boolean
     priority: number | null
     dateToComplete: Date | undefined
+    toggleChecked: (id: number) => void
 }
 
-export default function CardTask({ id, name, isChecked, priority, dateToComplete }: CardTaskProps) {
+export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked}: CardTaskProps) {
     const [changeIsChecked, setChangeIsChecked] = useState<boolean>(isChecked)
     const [changePriority, setChangePriority] = useState<number | null>(priority)
     const [changeDateToComplete, setChangeDateToComplete] = useState<Date | undefined>(dateToComplete)
@@ -43,10 +44,6 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
         setIsOpenPrioritySelect(false)
     }
 
-    const handleIsChecked = () => {
-        setChangeIsChecked(!changeIsChecked)
-    }
-
     const handlePriority = (value: number) => {
         setChangePriority(value)
 
@@ -58,9 +55,9 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
             <div className="flex gap-2">
                 {
                     changeIsChecked ?
-                        <CheckIcon onClick={handleIsChecked} className="cursor-pointer hover:opacity-75" />
+                        <CheckIcon onClick={toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                         :
-                        <UncheckIcon onClick={handleIsChecked} className="cursor-pointer hover:opacity-75" />
+                        <UncheckIcon onClick={toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                 }
                 {
                     changeIsChecked ? (

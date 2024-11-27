@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 import Menu from "@/app/components/menu";
 import Button from "@/app/components/button";
@@ -18,15 +17,30 @@ import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
 
+interface ListProps {
+    id: number
+    userId: number
+    name: string
+    icon: string
+    isFavorite: boolean
+}
+
+interface TaskProps extends Omit<CardTaskProps, 'toggleChecked'> {}
+
 export default function List() {
-    const [tasks, setTasks] = useState<CardTaskProps[]>()
+    const [list, setList] = useState<ListProps | null>(null)
+    const [tasks, setTasks] = useState<TaskProps[] | null>(null)
     const [newTaskDate, setNewTaskDate] = useState<Date>()
+    const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
+    const [newTaskPriority, setNewTaskPriority] = useState<string>()
 
-    const [changeIsFavorited, setChangeIsFavorited] = useState<boolean>()
+    const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
+    const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
+    const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
+    const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState<boolean>(false)
 
-    const [isOpenCalendarModal, setIsOpenCalendarModal] = useState(false)
-    const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState(false)
-    const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState(false)
+    const filteredTasksChecked = tasks?.filter(task => task.isChecked == true)
+    const filteredTasksNotChecked = tasks?.filter(task => task.isChecked == false)
 
     const openCalendarModal = () => {
         setIsOpenCalendarModal(true)
@@ -52,51 +66,102 @@ export default function List() {
         setIsOpenAddLabelModal(false)
     }
 
+    const openEditListModal = () => {
+        setIsOpenEditListModal(true)
+    }
+
+    const closeEditListModal = () => {
+        setIsOpenEditListModal(false)
+    }
+
+    const handleIsFavorited = () => {
+        setList(prevList => prevList && ({
+            ...prevList,
+            isFavorite: !prevList?.isFavorite
+        }))
+    }
+
+    const handleToggleChecked = (id: number) => {
+        setTasks(prevTasks => prevTasks && prevTasks.map(task =>
+            task.id === id ? { ...task, isChecked: !task.isChecked } : task
+        ))
+    }
+
+    const handleCreateTask = () => {
+        const task = {
+            id: 3,
+            name: newTaskName,
+            isChecked: false,
+            priority: 0,
+            dateToComplete: newTaskDate
+        }
+
+        setTasks(prevTasks => prevTasks && ([
+            ...prevTasks,
+            task
+        ]))
+    }
+
     useEffect(() => {
-        setTasks([{
+
+        setList({
             id: 1,
+            userId: 123,
             name: "Rotina",
-            isChecked: false,
-            priority: 2,
-            dateToComplete: undefined
-        }, {
-            id: 2,
-            name: "Rotina",
-            isChecked: false,
-            priority: 2,
-            dateToComplete: undefined
-        }])
+            icon: "❤️",
+            isFavorite: true
+        })
+
+        // setTasks([{
+        //     id: 1,
+        //     name: "Rotina",
+        //     isChecked: true,
+        //     priority: 2,
+        //     dateToComplete: undefined
+        // }, {
+        //     id: 2,
+        //     name: "Rotina",
+        //     isChecked: false,
+        //     priority: 2,
+        //     dateToComplete: undefined
+        // }])
     }, [])
 
     return (
         <div className='min-h-screen flex bg-black-200'>
             <Menu />
 
-            <main className='w-full max-h-screen ml-[312px] p-[60px] space-y-5'>
+            <main className='w-full h-full ml-[312px] p-[60px] space-y-5'>
                 <div className="space-y-5 m-0">
-                    <div className="text-6xl">❤️</div>
+                    <div className="text-6xl">{list?.icon}</div>
 
                     <div className="flex justify-between items-end">
-                        <h1 className="font-bold text-4xl text-white-100">Nova lista</h1>
+                        <h1 className="font-bold text-4xl text-white-100">{list?.name}</h1>
 
                         <div className="flex gap-5">
-                            <StarFavorite className="cursor-pointer hover:opacity-75 text-purple-300" />
-                            <StarFilled className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            {
+                                list?.isFavorite ? (
+                                    <StarFilled onClick={handleIsFavorited} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                                ) : (
+                                    <StarFavorite onClick={handleIsFavorited} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                                )
+                            }
 
-                            <EditIcon onClick={openAddLabelModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            <EditIcon onClick={openEditListModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
+
                             <DeleteIcon onClick={openDeleteListModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
                         </div>
                     </div>
                 </div>
 
                 <div className="flex gap-3 items-center">
-                    <CardLabel name={"Book"} id={0} color="secondary" size="small" />
+                    <CardLabel name={"Book"} id={0} color="secondary" size="small" iconSize="small" />
 
-                    <AddLabel onClick={openAddLabelModal} className="size-7 cursor-pointer hover:opacity-75" />
+                    <AddLabel onClick={openAddLabelModal} className="cursor-pointer hover:opacity-75" />
                 </div>
 
                 <div className="flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
-                    <input type="text" placeholder="Criar nova tarefa" className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
+                    <input onChange={(e) => setNewTaskName(e.target.value)} type="text" placeholder="Criar nova tarefa" className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
 
                     <div className="flex justify-between">
                         <div className="flex gap-3">
@@ -107,26 +172,58 @@ export default function List() {
                             </button>
 
                             <button className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                Prioridade 
+                                Prioridade
                                 <PriorityIcon />
                             </button>
                         </div>
 
-                        <button className="w-fit text-center px-[18px] py-[9.5px] text-sm text-white-100 bg-purple-300 rounded-lg">
+                        <button onClick={handleCreateTask} className="w-fit text-center px-[18px] py-[9.5px] text-sm text-white-100 bg-purple-300 rounded-lg">
                             Criar
                         </button>
                     </div>
                 </div>
 
-                {
-                    tasks?.map((task, index) => (
-                        <CardTask key={index} id={task.id} isChecked={task.isChecked} dateToComplete={task.dateToComplete} name={task.name} priority={task.priority} />
+                {/* {
+                    filteredTasksNotChecked?.map((task, index) => (
+                        <CardTask
+                            key={index}
+                            id={task.id}
+                            isChecked={task.isChecked}
+                            dateToComplete={task.dateToComplete}
+                            name={task.name}
+                            priority={task.priority}
+                            toggleChecked={handleToggleChecked}
+                        />
                     ))
                 }
+
+                {
+                    filteredTasksChecked?.map((task, index) => (
+                        <CardTask
+                            key={index}
+                            id={task.id}
+                            isChecked={task.isChecked}
+                            dateToComplete={task.dateToComplete}
+                            name={task.name}
+                            priority={task.priority}
+                            toggleChecked={handleToggleChecked}
+                        />
+                    ))
+                } */}
             </main>
 
             {
                 isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal} />
+            }
+
+            {
+                isOpenEditListModal && (
+                    <Modal title="Editar lista" onClose={closeEditListModal}>
+                        <div className="flex justify-center gap-5">
+                            <Button>Salvar</Button>
+                        </div>
+                    </Modal>
+                )
             }
 
             {

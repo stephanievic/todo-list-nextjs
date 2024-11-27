@@ -21,9 +21,8 @@ export default function Calendar({ selected, setSelected, onClose }: CalendarPro
                     onSelect={setSelected}
                     classNames={{
                         today: `text-purple-100`,
-                        selected: `border border-purple-100 rounded-full`, 
-                        // root: `${defaultClassNames.root} shadow-lg p-5`, 
-                        chevron: `${defaultClassNames.chevron} text-purple-100` 
+                        selected: `bg-purple-200 text-black-200 rounded-full`, 
+                        chevron: `fill-purple-100` 
                     }}
 
                     className="bg-black-200 p-4 border border-purple-100 rounded-2xl"

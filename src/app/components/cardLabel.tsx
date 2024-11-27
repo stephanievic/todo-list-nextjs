@@ -2,7 +2,7 @@ import TagIcon from "../../../public/Tag.svg"
 import { tv, VariantProps } from 'tailwind-variants';
 
 const cardLabelVariants = tv({
-    base: "flex gap-2 border cursor-pointer hover:opacity-80",
+    base: "flex items-center gap-2 border cursor-pointer hover:opacity-80",
 
     variants: {
         color: {
@@ -15,16 +15,16 @@ const cardLabelVariants = tv({
             large: "w-[200px] p-3 rounded-xl"
         },
 
-
-        /* icon: {
-            small: "size-5",
-            large: "size-6"
-        }*/    
+        iconSize: {
+            small: "w-5 h-5",
+            large: "w-6 h-6"
+        } 
     },
 
     defaultVariants: {
         color: 'primary',
-        size: 'large'
+        size: 'large',
+        // iconSize: 'large'
     }
 })
 
@@ -33,10 +33,10 @@ interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
     id: number
 }
 
-export default function CardLabel ({name, id, color, size}:CardLabelProps) {
+export default function CardLabel ({name, id, color, size, iconSize}:CardLabelProps) {
     return (
         <div className={cardLabelVariants({color, size})}>
-            <TagIcon />
+            <TagIcon/>
             <p>{name}</p>
         </div>
     )
