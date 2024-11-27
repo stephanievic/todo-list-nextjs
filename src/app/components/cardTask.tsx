@@ -55,9 +55,9 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
             <div className="flex gap-2">
                 {
                     changeIsChecked ?
-                        <CheckIcon onClick={toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
+                        <CheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                         :
-                        <UncheckIcon onClick={toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
+                        <UncheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                 }
                 {
                     changeIsChecked ? (

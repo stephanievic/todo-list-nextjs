@@ -25,22 +25,28 @@ interface ListProps {
     isFavorite: boolean
 }
 
-interface TaskProps extends Omit<CardTaskProps, 'toggleChecked'> {}
+export interface TaskProps {
+    id: number
+    name: string
+    isChecked: boolean
+    priority: number | null
+    dateToComplete: Date | undefined
+}
 
 export default function List() {
     const [list, setList] = useState<ListProps | null>(null)
     const [tasks, setTasks] = useState<TaskProps[] | null>(null)
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
-    const [newTaskPriority, setNewTaskPriority] = useState<string>()
+    const [newTaskPriority, setNewTaskPriority] = useState<number | null>()
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState<boolean>(false)
 
-    const filteredTasksChecked = tasks?.filter(task => task.isChecked == true)
-    const filteredTasksNotChecked = tasks?.filter(task => task.isChecked == false)
+    const filteredTasksChecked = tasks?.filter(task => task.isChecked)
+    const filteredTasksNotChecked = tasks?.filter(task => !task.isChecked)
 
     const openCalendarModal = () => {
         setIsOpenCalendarModal(true)
@@ -81,7 +87,7 @@ export default function List() {
         }))
     }
 
-    const handleToggleChecked = (id: number) => {
+    const handleToggleChecked = (id: number) => {        
         setTasks(prevTasks => prevTasks && prevTasks.map(task =>
             task.id === id ? { ...task, isChecked: !task.isChecked } : task
         ))
@@ -89,10 +95,10 @@ export default function List() {
 
     const handleCreateTask = () => {
         const task = {
-            id: 3,
+            id: tasks ? tasks.length + 1 : 3,
             name: newTaskName,
             isChecked: false,
-            priority: 0,
+            priority: newTaskPriority ? newTaskPriority : null,
             dateToComplete: newTaskDate
         }
 
@@ -112,19 +118,19 @@ export default function List() {
             isFavorite: true
         })
 
-        // setTasks([{
-        //     id: 1,
-        //     name: "Rotina",
-        //     isChecked: true,
-        //     priority: 2,
-        //     dateToComplete: undefined
-        // }, {
-        //     id: 2,
-        //     name: "Rotina",
-        //     isChecked: false,
-        //     priority: 2,
-        //     dateToComplete: undefined
-        // }])
+        setTasks([{
+            id: 1,
+            name: "Rotina",
+            isChecked: true,
+            priority: 2,
+            dateToComplete: undefined
+        }, {
+            id: 2,
+            name: "Teste",
+            isChecked: false,
+            priority: 2,
+            dateToComplete: undefined
+        }])
     }, [])
 
     return (
@@ -183,7 +189,7 @@ export default function List() {
                     </div>
                 </div>
 
-                {/* {
+                {
                     filteredTasksNotChecked?.map((task, index) => (
                         <CardTask
                             key={index}
@@ -209,7 +215,9 @@ export default function List() {
                             toggleChecked={handleToggleChecked}
                         />
                     ))
-                } */}
+                }
+
+                
             </main>
 
             {
