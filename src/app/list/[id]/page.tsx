@@ -16,6 +16,7 @@ import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
+import PrioritySelect from "@/app/components/prioritySelect";
 
 interface ListProps {
     id: number
@@ -38,15 +39,20 @@ export default function List() {
     const [tasks, setTasks] = useState<TaskProps[] | null>(null)
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
-    const [newTaskPriority, setNewTaskPriority] = useState<number | null>()
+    const [newTaskPriority, setNewTaskPriority] = useState<number | null>(null)
+
+    const priorityLabel = ['Baixa', 'Média', 'Alta']
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState<boolean>(false)
+    const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
     const filteredTasksChecked = tasks?.filter(task => task.isChecked)
     const filteredTasksNotChecked = tasks?.filter(task => !task.isChecked)
+
+
 
     const openCalendarModal = () => {
         setIsOpenCalendarModal(true)
@@ -80,6 +86,14 @@ export default function List() {
         setIsOpenEditListModal(false)
     }
 
+    const openPrioritySelect = () => {
+        setIsOpenPrioritySelect(true)
+    }
+
+    const closePrioritySelect = () => {
+        setIsOpenPrioritySelect(false)
+    }
+
     const handleIsFavorited = () => {
         setList(prevList => prevList && ({
             ...prevList,
@@ -87,7 +101,7 @@ export default function List() {
         }))
     }
 
-    const handleToggleChecked = (id: number) => {        
+    const handleToggleChecked = (id: number) => {
         setTasks(prevTasks => prevTasks && prevTasks.map(task =>
             task.id === id ? { ...task, isChecked: !task.isChecked } : task
         ))
@@ -106,6 +120,10 @@ export default function List() {
             ...prevTasks,
             task
         ]))
+    }
+
+    const handlePriority = (value: number) => {
+        setNewTaskPriority((prev) => (prev === value ? null : value))
     }
 
     useEffect(() => {
@@ -177,9 +195,16 @@ export default function List() {
                                 <CalendarIcon />
                             </button>
 
-                            <button className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                Prioridade
+                            <button onClick={openPrioritySelect} className="relative flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
+                                {
+                                    newTaskPriority !== null ? priorityLabel[newTaskPriority] : 'Prioridade'
+                                }
+
                                 <PriorityIcon />
+
+                                {
+                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect}/>
+                                }
                             </button>
                         </div>
 
@@ -216,8 +241,6 @@ export default function List() {
                         />
                     ))
                 }
-
-                
             </main>
 
             {
