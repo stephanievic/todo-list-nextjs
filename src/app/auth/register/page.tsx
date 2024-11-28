@@ -5,8 +5,11 @@ import Input from "../../components/input"
 import Button from "../../components/button";
 import { FormEvent, useState } from "react";
 import { useApi } from "../../hooks/useApi";
+import { useRouter } from "next/navigation";
 
 export default function Register () {
+    const router = useRouter()
+
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -18,6 +21,8 @@ export default function Register () {
         if (password === confirmPassword) {
             try {
                 const response = await useApi.register(username, email, password)
+
+                router.push('/home')
             } catch (error) {
                 console.log(error)
             }
@@ -30,13 +35,13 @@ export default function Register () {
                 <h1 className="text-4xl text-purple-400 font-bold text-center">Cadastro</h1>
 
                 <form onSubmit={handleRegister} className="flex flex-col items-center gap-10">
-                    <Input label="Nome de usuário" type="text" placeholder="Informe um username." value={setUsername}/>
+                    <Input label="Nome de usuário" type="text" placeholder="Informe seu username" value={setUsername}/>
 
-                    <Input label="E-mail" type="email" placeholder="Informe um e-mail." value={setEmail}/>
+                    <Input label="E-mail" type="email" placeholder="Informe seu e-mail" value={setEmail}/>
 
-                    <Input label="Senha" type="password" placeholder="Digite uma senha." value={setPassword}/>
+                    <Input label="Senha" type="password" placeholder="Informe sua senha" value={setPassword}/>
 
-                    <Input label="Confirmar senha" type="password" placeholder="Confirme a senha digitada no campo anterior." value={setConfirmPassword}/>
+                    <Input label="Confirmar senha" type="password" placeholder="Confirme sua senha" value={setConfirmPassword}/>
 
                     <Button variant="primary" type="submit">Cadastrar</Button>
                 </form>
