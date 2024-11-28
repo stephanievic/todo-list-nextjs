@@ -1,5 +1,4 @@
 import EmojiPickerModal from "emoji-picker-react";
-import { Dispatch, SetStateAction, useState } from "react";
 
 interface EmojiPickerProps {
     handleIconList: (icon:string) => void
@@ -12,8 +11,8 @@ export default function EmojiPicker({ handleIconList, onClose }: EmojiPickerProp
             <div onClick={(event) => event.stopPropagation()}>
                 <EmojiPickerModal
                     onEmojiClick={(emoji) => handleIconList(emoji.emoji)}
-                    searchDisabled={true} // Desabilita a barra de pesquisa
-                    previewConfig={{ showPreview: false }} // Remove o preview
+                    previewConfig={{ showPreview: false }}
+                    // searchDisabled={true} 
                 />
             </div>
         </div>

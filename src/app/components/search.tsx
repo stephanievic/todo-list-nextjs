@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from "react";
-import Image from "next/image";
 
 import SearchIcon from "../../../public/SearchIcon.svg"
 import PlusCircleFill from "../../../public/PlusCircleFillWhite.svg"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Menu from "@/app/components/menu";
 import Button from "@/app/components/button";
@@ -41,7 +41,6 @@ export default function List() {
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
     const [newTaskPriority, setNewTaskPriority] = useState<number | null>(null)
-    const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 
     const priorityLabel = ['Baixa', 'Média', 'Alta']
 
@@ -55,54 +54,12 @@ export default function List() {
     const filteredTasksChecked = tasks?.filter(task => task.isChecked)
     const filteredTasksNotChecked = tasks?.filter(task => !task.isChecked)
 
-
-
-    const openCalendarModal = () => {
-        setIsOpenCalendarModal(true)
+    const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
+        setOpen(true)
     }
 
-    const closeCalendarModal = () => {
-        setIsOpenCalendarModal(false)
-    }
-
-    const openEmojiPicker = () => {
-        setIsOpenEmojiPicker(true)
-    }
-
-    const closeEmojiPicker = () => {
-        setIsOpenEmojiPicker(false)
-    }
-
-    const openDeleteListModal = () => {
-        setIsOpenDeleteListModal(true)
-    }
-
-    const closeDeleteListModal = () => {
-        setIsOpenDeleteListModal(false)
-    }
-
-    const openAddLabelModal = () => {
-        setIsOpenAddLabelModal(true)
-    }
-
-    const closeAddLabelModal = () => {
-        setIsOpenAddLabelModal(false)
-    }
-
-    const openEditListModal = () => {
-        setIsOpenEditListModal(true)
-    }
-
-    const closeEditListModal = () => {
-        setIsOpenEditListModal(false)
-    }
-
-    const openPrioritySelect = () => {
-        setIsOpenPrioritySelect(true)
-    }
-
-    const closePrioritySelect = () => {
-        setIsOpenPrioritySelect(false)
+    const closeModal = (setClose: Dispatch<SetStateAction<boolean>>) => {
+        setClose(false)
     }
 
     const handleIsFavorited = () => {
@@ -140,6 +97,8 @@ export default function List() {
                 icon: emoji
             })
         )
+    }
+
     const handlePriority = (value: number) => {
         setNewTaskPriority((prev) => (prev === value ? null : value))
     }
@@ -175,7 +134,7 @@ export default function List() {
 
             <main className='w-full h-full ml-[312px] p-[60px] space-y-5'>
                 <div className="space-y-5 m-0">
-                    <div className="text-6xl" onClick={openEmojiPicker}>
+                    <div className="text-6xl" onClick={() => openModal(setIsOpenEmojiPicker)}>
                         {list?.icon}
                     </div>
 
@@ -191,9 +150,9 @@ export default function List() {
                                 )
                             }
 
-                            <EditIcon onClick={openEditListModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            <EditIcon onClick={() => openModal(setIsOpenEditListModal)} className="cursor-pointer hover:opacity-75 text-purple-300" />
 
-                            <DeleteIcon onClick={openDeleteListModal} className="cursor-pointer hover:opacity-75 text-purple-300" />
+                            <DeleteIcon onClick={() => openModal(setIsOpenDeleteListModal)} className="cursor-pointer hover:opacity-75 text-purple-300" />
                         </div>
                     </div>
                 </div>
@@ -201,7 +160,7 @@ export default function List() {
                 <div className="flex gap-3 items-center">
                     <CardLabel name={"Book"} id={0} color="secondary" size="small" iconSize="small" />
 
-                    <AddLabel onClick={openAddLabelModal} className="cursor-pointer hover:opacity-75" />
+                    <AddLabel onClick={() => openModal(setIsOpenAddLabelModal)} className="cursor-pointer hover:opacity-75" />
                 </div>
 
                 <div className="flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
@@ -209,13 +168,13 @@ export default function List() {
 
                     <div className="flex justify-between">
                         <div className="flex gap-3">
-                            <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
+                            <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
                                 {newTaskDate ? newTaskDate.toLocaleDateString() : `Data de realização`}
 
                                 <CalendarIcon />
                             </button>
 
-                            <button onClick={openPrioritySelect} className="relative flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
+                            <button onClick={() => openModal(setIsOpenPrioritySelect)} className="relative flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
                                 {
                                     newTaskPriority !== null ? priorityLabel[newTaskPriority] : 'Prioridade'
                                 }
@@ -223,7 +182,7 @@ export default function List() {
                                 <PriorityIcon />
 
                                 {
-                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect}/>
+                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)}/>
                                 }
                             </button>
                         </div>
@@ -266,16 +225,16 @@ export default function List() {
             </main>
 
             {
-                isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal} />
+                isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={() => closeModal(setIsOpenCalendarModal)} />
             }
 
             {
-                isOpenEmojiPicker && <EmojiPicker handleIconList={handleIconList} onClose={closeEmojiPicker} />
+                isOpenEmojiPicker && <EmojiPicker handleIconList={handleIconList} onClose={() => closeModal(setIsOpenEmojiPicker)} />
             }
 
             {
                 isOpenEditListModal && (
-                    <Modal title="Editar lista" onClose={closeEditListModal}>
+                    <Modal title="Editar lista" onClose={() => closeModal(setIsOpenEditListModal)}>
                         <div className="flex justify-center gap-5">
                             <Button>Salvar</Button>
                         </div>
@@ -285,13 +244,13 @@ export default function List() {
 
             {
                 isOpenDeleteListModal && (
-                    <Modal title="Excluir lista" onClose={closeDeleteListModal}>
+                    <Modal title="Excluir lista" onClose={() => closeModal(setIsOpenDeleteListModal)}>
                         <p className="text-base text-black-200">Ao confirmar você excluirá a lista permanentemente. Deseja continuar?</p>
 
                         <div className="flex justify-center gap-5">
                             <Button>Confirmar</Button>
 
-                            <Button onClick={closeDeleteListModal} variant="secondary">Cancelar</Button>
+                            <Button onClick={() => closeModal(setIsOpenDeleteListModal)} variant="secondary">Cancelar</Button>
                         </div>
                     </Modal>
                 )
@@ -299,7 +258,7 @@ export default function List() {
 
             {
                 isOpenAddLabelModal && (
-                    <Modal title="Adicionar etiqueta" onClose={closeAddLabelModal}>
+                    <Modal title="Adicionar etiqueta" onClose={() => closeModal(setIsOpenAddLabelModal)}>
                         <div className="flex gap-2 items-center">
                             <input type="checkbox" id="label1" name="label1" value={1} className="h-5 w-5" />
 
@@ -314,5 +273,4 @@ export default function List() {
             }
         </div>
     )
-}
 }
