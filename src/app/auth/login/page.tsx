@@ -5,17 +5,26 @@ import Input from "../../components/input"
 import Button from "../../components/button";
 import { FormEvent, useState } from "react";
 import { useApi } from "../../hooks/useApi";
+import { useUserStore } from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
 
 export default function Login () {
+    const user = useUserStore((state) => state.setUser)
+    const router = useRouter()
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
     const handleLogin = async (event:FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-           const response = await useApi.login(email, password)
+           const response: User = await useApi.login(email, password)
+
+            user(response)
+
+            router.push('/home')
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     } 
 

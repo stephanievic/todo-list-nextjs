@@ -1,3 +1,5 @@
+'use client'
+
 import { useUserStore } from "@/store/useUserStore"
 
 import Login from "./auth/login/page"

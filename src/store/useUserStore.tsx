@@ -1,13 +1,5 @@
 import { create } from "zustand"
 
-interface User {
-    id: number
-    name: string
-    photo: string | null
-    email: string
-    token: string
-}
-
 interface UserStore {
     user: User | null
     setUser: (userData: User) => void

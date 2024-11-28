@@ -9,6 +9,7 @@ import Search from "../components/search"
 import CardList from "../components/cardList";
 
 import PerfilIcon from "../../../public/PerfilIconEx.png";
+import { useUserStore } from "@/store/useUserStore";
 
 interface List {
     icon: string
@@ -17,8 +18,11 @@ interface List {
 }
 
 export default function Home() {
+    const user = useUserStore((state) => state.user)
     const router = useRouter()
+
     const dateNow = new Date()
+    const weekdayOfToday = dateNow.toLocaleDateString('pt-BR', { weekday: 'long' })
 
     const [searchList, setSearchList] = useState("")
     const [lists, setLists] = useState<List[] | undefined>()
@@ -49,10 +53,10 @@ export default function Home() {
             <main className='w-full ml-[312px] p-[60px] space-y-20'>
                 <div className="flex flex-col w-fit">
                     <div className="flex gap-5 items-center">
-                        <Image src={PerfilIcon} alt="exemplo de foto de perfil" className="rounded-full" width={70} height={70} />
-                        <h1 className="text-4xl text-white-100 font-bold">Olá, Stephanie 👋</h1>
+                        <Image src={user?.photo ? user.photo : PerfilIcon} alt="exemplo de foto de perfil" className="rounded-full" width={70} height={70} />
+                        <h1 className="text-4xl text-white-100 font-bold">Olá, {user?.name} 👋</h1>
                     </div>
-                    <p className="ml-[92px] text-xl text-purple-100">Quarta-feira, {dateNow.toLocaleDateString()}</p>
+                    <p className="ml-[92px] text-xl text-purple-100">{weekdayOfToday}, {dateNow.toLocaleDateString()}</p>
                 </div>
 
                 <div className="flex gap-6 items-center justify-center">
