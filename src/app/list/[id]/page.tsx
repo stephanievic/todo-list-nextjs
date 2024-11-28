@@ -7,6 +7,7 @@ import Button from "@/app/components/button";
 import Calendar from "@/app/components/calendar";
 import CardLabel from "@/app/components/cardLabel";
 import CardTask, { CardTaskProps } from "@/app/components/cardTask";
+import EmojiPicker from "@/app/components/emojiPicker";
 import Modal from "@/app/components/modal";
 
 import CalendarIcon from "../../../../public/CalendarEvent.svg";
@@ -39,11 +40,13 @@ export default function List() {
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
     const [newTaskPriority, setNewTaskPriority] = useState<number | null>()
+    const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState<boolean>(false)
+    const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false)
 
     const filteredTasksChecked = tasks?.filter(task => task.isChecked)
     const filteredTasksNotChecked = tasks?.filter(task => !task.isChecked)
@@ -54,6 +57,14 @@ export default function List() {
 
     const closeCalendarModal = () => {
         setIsOpenCalendarModal(false)
+    }
+
+    const openEmojiPicker = () => {
+        setIsOpenEmojiPicker(true)
+    }
+
+    const closeEmojiPicker = () => {
+        setIsOpenEmojiPicker(false)
     }
 
     const openDeleteListModal = () => {
@@ -87,7 +98,7 @@ export default function List() {
         }))
     }
 
-    const handleToggleChecked = (id: number) => {        
+    const handleToggleChecked = (id: number) => {
         setTasks(prevTasks => prevTasks && prevTasks.map(task =>
             task.id === id ? { ...task, isChecked: !task.isChecked } : task
         ))
@@ -106,6 +117,15 @@ export default function List() {
             ...prevTasks,
             task
         ]))
+    }
+
+    const handleIconList = (emoji: string) => {
+        setList(prevList => prevList &&
+            ({
+                ...prevList,
+                icon: emoji
+            })
+        )
     }
 
     useEffect(() => {
@@ -139,7 +159,9 @@ export default function List() {
 
             <main className='w-full h-full ml-[312px] p-[60px] space-y-5'>
                 <div className="space-y-5 m-0">
-                    <div className="text-6xl">{list?.icon}</div>
+                    <div className="text-6xl" onClick={openEmojiPicker}>
+                        {list?.icon}
+                    </div>
 
                     <div className="flex justify-between items-end">
                         <h1 className="font-bold text-4xl text-white-100">{list?.name}</h1>
@@ -217,11 +239,15 @@ export default function List() {
                     ))
                 }
 
-                
+
             </main>
 
             {
                 isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={closeCalendarModal} />
+            }
+
+            {
+                isOpenEmojiPicker && <EmojiPicker handleIconList={handleIconList} onClose={closeEmojiPicker} />
             }
 
             {
