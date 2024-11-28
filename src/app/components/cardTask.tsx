@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Calendar from "./calendar";
 
@@ -8,6 +8,7 @@ import CalendarIcon from "../../../public/CalendarEvent.svg";
 import CheckIcon from "../../../public/Checked.svg";
 import PriorityIcon from "../../../public/ExclamationCircle.svg";
 import UncheckIcon from "../../../public/Unchecked.svg";
+import PrioritySelect from "./prioritySelect";
 
 export interface CardTaskProps {
     id: number
@@ -18,7 +19,8 @@ export interface CardTaskProps {
     toggleChecked: (id: number) => void
 }
 
-export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked}: CardTaskProps) {
+export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked }: CardTaskProps) {
+
     const [changeIsChecked, setChangeIsChecked] = useState<boolean>(isChecked)
     const [changePriority, setChangePriority] = useState<number | null>(priority)
     const [changeDateToComplete, setChangeDateToComplete] = useState<Date | undefined>(dateToComplete)
@@ -45,9 +47,7 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
     }
 
     const handlePriority = (value: number) => {
-        setChangePriority(value)
-
-        closePrioritySelect()
+        setChangePriority((prev) => (prev === value ? null : value))
     }
 
     return (
@@ -73,21 +73,21 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
                     <div className="flex divide-x divide-solid">
                         <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 text-xs text-white-100">
                             <CalendarIcon />
-                            {changeDateToComplete && changeDateToComplete.toLocaleDateString()}
-                        </button>
-
-                        <div onClick={openPrioritySelect} className="w-20 relative flex gap-2 items-center px-3 text-xs text-white-100 cursor-pointer">
-                            <PriorityIcon />
-                            {changePriority !== null && priorityLabel[changePriority]}
 
                             {
-                                isOpenPrioritySelect && (
-                                    <div className="absolute inset-0 top-8 left-3 h-max flex flex-col divide-y divide-gray bg-black-200 border border-gray rounded-lg">
-                                        <button onClick={() => handlePriority(0)} className="py-3 font-bold text-green-400 hover:opacity-75 hover:bg-black-100 rounded-t-lg">Baixa</button>
-                                        <button onClick={() => handlePriority(1)} className="py-3 font-bold text-yellow-400 hover:opacity-75 hover:bg-black-100">Média</button>
-                                        <button onClick={() => handlePriority(2)} className="py-3 font-bold text-red-400 hover:opacity-75 hover:bg-black-100 rounded-b-lg">Alta</button>
-                                    </div>
-                                )
+                                changeDateToComplete && changeDateToComplete.toLocaleDateString()
+                            }
+                        </button>
+
+                        <div onClick={openPrioritySelect} className="relative flex gap-2 items-center pl-3 text-xs text-white-100 cursor-pointer">
+                            <PriorityIcon />
+
+                            {
+                                changePriority !== null && priorityLabel[changePriority]
+                            }
+
+                            {
+                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect}/>
                             }
                         </div>
                     </div>
