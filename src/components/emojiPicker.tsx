@@ -12,7 +12,6 @@ export default function EmojiPicker({ handleIconList, onClose }: EmojiPickerProp
                 <EmojiPickerModal
                     onEmojiClick={(emoji) => handleIconList(emoji.emoji)}
                     previewConfig={{ showPreview: false }}
-                    // searchDisabled={true} 
                 />
             </div>
         </div>

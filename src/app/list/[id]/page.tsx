@@ -6,7 +6,7 @@ import Menu from "@/components/menu";
 import Button from "@/components/button";
 import Calendar from "@/components/calendar";
 import CardLabel from "@/components/cardLabel";
-import CardTask, { CardTaskProps } from "@/components/cardTask";
+import CardTask from "@/components/cardTask";
 import EmojiPicker from "@/components/emojiPicker";
 import Modal from "@/components/modal";
 

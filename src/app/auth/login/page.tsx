@@ -31,6 +31,8 @@ export default function Login() {
 
             if (user) {
                 router.push('/home')
+            } else {
+                throw new Error()
             }
         } catch (error: any) {
             if (error.fieldErrors) {

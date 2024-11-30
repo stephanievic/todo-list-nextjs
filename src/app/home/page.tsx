@@ -10,10 +10,11 @@ import CardList from "@/components/cardList";
 
 import PerfilIcon from "../../../public/PerfilIconEx.png";
 import { useUserStore } from "@/store/useUserStore";
+import { useApi } from "@/hooks/useApi";
 
 interface List {
     icon: string
-    title: string
+    name: string
     id: number
 }
 
@@ -28,23 +29,45 @@ export default function Home() {
     const [lists, setLists] = useState<List[] | undefined>()
     const [listsFavorites, setListsFavorites] = useState<List[]>()
 
-    const addList = () => {
-        router.push(`/list/1`)
+    const addList = async () => {
+        try {
+            if (user) {
+                const { id } = await useApi.createList('Nova Lista', user.id, '👩')
+
+                router.push(`/list/${id}`)
+            }
+        } catch (error: any) {
+            if (error.fieldErrors) {
+                const firstErrorKey = Object.keys(error.fieldErrors)?.[0]
+                alert(error.fieldErrors[firstErrorKey]?.[0] || "Erro ao realizar login")
+            } else {
+                alert(error.message || "Erro inesperado. Tente novamente.")
+            }
+        }
+    }
+
+    const setAllLists = async () => {
+        if (user) {
+            const response = await useApi.getAllLists(user?.id)
+
+            setLists(response)
+        }
+    }
+
+    const setFavoritesLists = async () => {
+        if (user) {
+            const response = await useApi.getFavoritesLists(user?.id)
+
+            setListsFavorites(response)
+        }
     }
 
     useEffect(() => {
-        setLists([
-            { icon: "👩", title: "Rotina", id: 1 },
-            { icon: "❤️", title: "Vida", id: 2 }
-        ]),
-
-            setListsFavorites([
-                { icon: "👩", title: "Rotina", id: 1 },
-                { icon: "❤️", title: "Vida", id: 2 }
-            ])
+        setFavoritesLists()
+        setAllLists()
     }, [])
 
-    const searchFiltered = lists?.filter((list) => list.title.toLowerCase().includes(searchList.toLowerCase())) ?? []
+    const searchFiltered = lists?.filter((list) => list.name.toLowerCase().includes(searchList.toLowerCase())) ?? []
 
     return (
         <div className='min-h-screen flex bg-black-200'>
@@ -70,7 +93,7 @@ export default function Home() {
                                 searchFiltered?.length > 0 ? (
                                     <div className="text-white-100">
                                         {searchFiltered?.map((search, index) => (
-                                            <CardList key={index} icon={search.icon} title={search.title} id={search.id} />
+                                            <CardList key={index} icon={search.icon} title={search.name} id={search.id} />
                                         ))}
                                     </div>
                                 ) :
@@ -90,7 +113,7 @@ export default function Home() {
                                     <div className="flex flex-wrap gap-10">
                                         {
                                             listsFavorites?.map((listFavorite, index) => (
-                                                <CardList key={index} icon={listFavorite.icon} title={listFavorite.title} id={listFavorite.id} />
+                                                <CardList key={index} icon={listFavorite.icon} title={listFavorite.name} id={listFavorite.id} />
                                             ))
                                         }
                                     </div>
@@ -102,7 +125,7 @@ export default function Home() {
                                     <div className="flex flex-wrap gap-10">
                                         {
                                             lists?.map((list, index) => (
-                                                <CardList key={index} icon={list.icon} title={list.title} id={list.id} />
+                                                <CardList key={index} icon={list.icon} title={list.name} id={list.id} />
                                             ))
                                         }
                                     </div>
