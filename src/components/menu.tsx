@@ -6,9 +6,9 @@ import Link from 'next/link'
 import Modal from './modal'
 import Button from './button'
 
-import PlusCircleFill from '../../../public/PlusCircleFill.svg'
-import LogOut from '../../../public/BoxArrowRight.svg'
-import ArrowDown from '../../../public/ArrowDown.svg'
+import PlusCircleFill from '../../public/PlusCircleFill.svg'
+import LogOut from '../../public/BoxArrowRight.svg'
+import ArrowDown from '../../public/ArrowDown.svg'
 
 export default function Menu() {
     const [isOpenModalLogout, setIsOpenModalLogout] = useState(false)

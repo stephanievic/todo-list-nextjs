@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react"
 
-import CardLabel from "../components/cardLabel"
-import Menu from "../components/menu"
-import Search from "../components/search"
+import CardLabel from "@/components/cardLabel"
+import Menu from "@/components/menu"
+import Search from "@/components/search"
 
 interface Label {
     name: string

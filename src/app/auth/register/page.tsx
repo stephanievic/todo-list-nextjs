@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link";
-import Input from "../../components/input"
-import Button from "../../components/button";
+import Input from "../../../components/input"
+import Button from "../../../components/button";
 import { FormEvent, useState } from "react";
-import { useApi } from "../../hooks/useApi";
+import { useApi } from "../../../hooks/useApi";
 import { useRouter } from "next/navigation";
 
 export default function Register () {

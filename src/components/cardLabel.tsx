@@ -1,4 +1,4 @@
-import TagIcon from "../../../public/Tag.svg"
+import TagIcon from "../../public/Tag.svg"
 import { tv, VariantProps } from 'tailwind-variants';
 
 const cardLabelVariants = tv({

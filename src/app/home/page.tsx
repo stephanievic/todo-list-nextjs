@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import Menu from "../components/menu";
-import Search from "../components/search"
-import CardList from "../components/cardList";
+import Menu from "@/components/menu";
+import Search from "@/components/search"
+import CardList from "@/components/cardList";
 
 import PerfilIcon from "../../../public/PerfilIconEx.png";
 import { useUserStore } from "@/store/useUserStore";

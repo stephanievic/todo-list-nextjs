@@ -1,5 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
-import X from '../../../public/X.svg'
+import X from '../../public/X.svg'
 
 interface ModalProps {
     title: string

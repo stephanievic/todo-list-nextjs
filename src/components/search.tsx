@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
-import SearchIcon from "../../../public/SearchIcon.svg"
-import PlusCircleFill from "../../../public/PlusCircleFillWhite.svg"
+import SearchIcon from "../../public/SearchIcon.svg"
+import PlusCircleFill from "../../public/PlusCircleFillWhite.svg"
 
 interface SearchProps {
     placeholder: string

@@ -2,13 +2,13 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import Menu from "@/app/components/menu";
-import Button from "@/app/components/button";
-import Calendar from "@/app/components/calendar";
-import CardLabel from "@/app/components/cardLabel";
-import CardTask, { CardTaskProps } from "@/app/components/cardTask";
-import EmojiPicker from "@/app/components/emojiPicker";
-import Modal from "@/app/components/modal";
+import Menu from "@/components/menu";
+import Button from "@/components/button";
+import Calendar from "@/components/calendar";
+import CardLabel from "@/components/cardLabel";
+import CardTask, { CardTaskProps } from "@/components/cardTask";
+import EmojiPicker from "@/components/emojiPicker";
+import Modal from "@/components/modal";
 
 import CalendarIcon from "../../../../public/CalendarEvent.svg";
 import PriorityIcon from "../../../../public/ExclamationCircle.svg";
@@ -17,7 +17,7 @@ import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
-import PrioritySelect from "@/app/components/prioritySelect";
+import PrioritySelect from "@/components/prioritySelect";
 
 interface ListProps {
     id: number

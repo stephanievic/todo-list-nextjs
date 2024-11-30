@@ -4,10 +4,10 @@ import { useState } from "react";
 
 import Calendar from "./calendar";
 
-import CalendarIcon from "../../../public/CalendarEvent.svg";
-import CheckIcon from "../../../public/Checked.svg";
-import PriorityIcon from "../../../public/ExclamationCircle.svg";
-import UncheckIcon from "../../../public/Unchecked.svg";
+import CalendarIcon from "../../public/CalendarEvent.svg";
+import CheckIcon from "../../public/Checked.svg";
+import PriorityIcon from "../../public/ExclamationCircle.svg";
+import UncheckIcon from "../../public/Unchecked.svg";
 import PrioritySelect from "./prioritySelect";
 
 export interface CardTaskProps {
