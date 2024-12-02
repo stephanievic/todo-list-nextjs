@@ -23,7 +23,7 @@ export default function Label() {
     const [addLabelName, setAddLabelName] = useState<string>("")
     const [editLabelName, setEditLabelName] = useState<string>("")
 
-    const [labels, setLabels] = useState<Label[]>()
+    const [labels, setLabels] = useState<Label[] | null>(null)
     const [searchLabel, setSearchLabel] = useState("")
 
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState(false)
@@ -37,17 +37,15 @@ export default function Label() {
         setClose(false)
     }
 
-    const searchFiltered = (labels ?? []).filter((label) =>
-        label.name.toLowerCase().includes(searchLabel.toLowerCase())
-    );
+    const searchFiltered = Array.isArray(labels) ? labels.filter((label) =>
+        label.name.toLowerCase().includes(searchLabel.toLowerCase())) : []
+
     const addLabel = async () => {
         if (addLabelName.trim() && user) {
-            const response = await useApi.createLabel(addLabelName, user.id)
+            const response: Label = await useApi.createLabel(addLabelName, user.id)
 
-            setLabels(prevLabels => prevLabels && {
-                    ...prevLabels,
-                    response
-                } 
+            setLabels(prevLabels =>
+                prevLabels ? [...prevLabels, response] : null
             )
 
             closeModal(setIsOpenAddLabelModal)

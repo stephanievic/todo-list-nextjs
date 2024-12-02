@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FormEvent, FormEventHandler, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 
@@ -18,6 +18,7 @@ import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
 import CardNewTask from "./components/cardNewTask";
+import { useUserStore } from "@/store/useUserStore";
 
 interface ListProps {
     id: number
@@ -26,24 +27,35 @@ interface ListProps {
     isFavorite: boolean
     labelOnList: {
         label: {
+            id: number
             name: string
         }
     }[],
     task: {
-        id: number,
-        dateToComplete: Date | undefined,
-        isChecked: boolean,
-        name: string,
+        id: number
+        dateToComplete: Date | undefined
+        isChecked: boolean
+        name: string
         priority: number | null
     }[]
 }
 
+interface LabelProps {
+    id: number
+    name: string
+}
+
 export default function List() {
+    const user = useUserStore((state) => state.user)
     const router = useRouter()
+
     const listId = 6
 
     const [list, setList] = useState<ListProps | null>(null)
-    const [newListName, setNewListName] = useState("")
+    const [labels, setLabels] = useState<LabelProps[]>([])
+
+    const [newListName, setNewListName] = useState<string>("")
+    const [selectedLabels, setSelectedLabels] = useState<LabelProps[]>([])
 
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
@@ -104,13 +116,50 @@ export default function List() {
         router.push('/home')
     }
 
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const labelId = parseInt(event.target.value)
+
+        setSelectedLabels(prevSelectedLabels => {
+            if (event.target.checked) {
+                const selectedLabel = labels.find(label => label.id === labelId)
+
+                if (selectedLabel) {
+                    return [...prevSelectedLabels, selectedLabel]
+                }
+            } else {
+                return prevSelectedLabels?.filter(label => label.id !== labelId)
+            }
+
+            return prevSelectedLabels
+        })
+    }
+
+    const handleLabels = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        await useApi.updateLabels(listId, selectedLabels)
+
+        const formattedLabels = selectedLabels.map(selectedLabel => {
+            return { label: { id: selectedLabel.id, name: selectedLabel.name } }
+        })
+
+        setList(prevList => 
+            prevList ? {
+                ...prevList,
+                labelOnList: formattedLabels 
+            } : null
+        )
+
+        closeModal(setIsOpenAddLabelModal)
+    }
+
     const handleCreateNewTask = async (name: string, dateToComplete: Date | undefined, priority: number | null) => {
         const newTask = await useApi.createTask(listId, name, dateToComplete, priority)
 
         setList(prevList =>
             prevList ? {
                 ...prevList,
-                task: [ ...prevList.task, newTask ]
+                task: [...prevList.task, newTask]
             } : null
         )
     }
@@ -121,8 +170,19 @@ export default function List() {
         setList(response)
     }
 
+    const getLabels = async () => {
+        if (user) {
+            const labels = await useApi.getAllLabels(user.id)
+
+            console.log(labels)
+            setLabels(labels)
+        }
+    }
+
     useEffect(() => {
         getList()
+
+        getLabels()
     }, [])
 
     return (
@@ -220,15 +280,21 @@ export default function List() {
             {
                 isOpenAddLabelModal && (
                     <Modal title="Adicionar etiqueta" onClose={() => closeModal(setIsOpenAddLabelModal)}>
-                        <div className="flex gap-2 items-center">
-                            <input type="checkbox" id="label1" name="label1" value={1} className="h-5 w-5" />
+                        <form onSubmit={(event: FormEvent<HTMLFormElement>) => handleLabels(event)}>
+                            {
+                                labels?.map((label, index) => (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <input type="checkbox" id={`label-${label.id}`} name={`label-${label.id}`} value={label.id} onChange={handleCheckboxChange} className="h-5 w-5" />
 
-                            <label htmlFor="label1" className="font-bold text-black-200">Book</label>
-                        </div>
+                                        <label htmlFor={`label-${label.id}`} className="font-bold text-black-200">{label.name}</label>
+                                    </div>
+                                ))
+                            }
 
-                        <div className="flex justify-center gap-5">
-                            <Button>Salvar</Button>
-                        </div>
+                            <div className="flex justify-center gap-5">
+                                <Button type="submit">Salvar</Button>
+                            </div>
+                        </form>
                     </Modal>
                 )
             }

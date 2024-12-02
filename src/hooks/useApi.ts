@@ -237,6 +237,30 @@ export const useApi = {
     }
   },
 
+  updateLabels: async (id: number, labels: { id: number, name: string }[]) => {
+    try {
+      const response = await fetch(`http://localhost:3001/list/${id}/labels`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          labels,
+        })
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
   deleteList: async (id: number) => {
     try {
       const response = await fetch(`http://localhost:3001/list/${id}`, {
@@ -304,6 +328,9 @@ export const useApi = {
         const errorResponse = await response.json();
         throw errorResponse;
       }
+
+      const data = await response.json() 
+      return data.labels
     } catch (error: any) {
       throw {
         message: error.message || "Erro inesperado.",
