@@ -1,27 +1,23 @@
 'use client'
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useApi } from "@/hooks/useApi";
 
 import Menu from "@/components/menu";
 import Button from "@/components/button";
-import Calendar from "@/components/calendar";
 import CardLabel from "@/components/cardLabel";
 import CardTask from "@/components/cardTask";
 import EmojiPicker from "@/components/emojiPicker";
 import Modal from "@/components/modal";
+import Input from "@/components/input";
 
-import CalendarIcon from "../../../../public/CalendarEvent.svg";
-import PriorityIcon from "../../../../public/ExclamationCircle.svg";
 import EditIcon from "../../../../public/PencilSquare.svg";
 import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
-import PrioritySelect from "@/components/prioritySelect";
-
-import { useApi } from "@/hooks/useApi";
-import Input from "@/components/input";
-import { useRouter } from "next/navigation";
+import CardNewTask from "./components/cardNewTask";
 
 interface ListProps {
     id: number
@@ -49,21 +45,13 @@ export default function List() {
     const [list, setList] = useState<ListProps | null>(null)
     const [newListName, setNewListName] = useState("")
 
-    const [newTaskDate, setNewTaskDate] = useState<Date>()
-    const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
-    const [newTaskPriority, setNewTaskPriority] = useState<number | null>(null)
-
-    const priorityLabel = ['Baixa', 'Média', 'Alta']
-
-    const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState<boolean>(false)
     const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false)
-    const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
-    const filteredTasksChecked = list?.task?.filter(task => task.isChecked)
-    const filteredTasksNotChecked = list?.task?.filter(task => !task.isChecked)
+    const filteredTasksChecked = Array.isArray(list?.task) ? list?.task?.filter(task => task.isChecked) : []
+    const filteredTasksNotChecked = Array.isArray(list?.task) ? list?.task?.filter(task => !task.isChecked) : []
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
         setOpen(true)
@@ -116,25 +104,20 @@ export default function List() {
         router.push('/home')
     }
 
-    const handleCreateTask = () => {
-        // const task = {
-        //     id: tasks ? tasks.length + 1 : 3,
-        //     name: newTaskName,
-        //     isChecked: false,
-        //     priority: newTaskPriority ? newTaskPriority : null,
-        //     dateToComplete: newTaskDate
-        // }
+    const handleCreateNewTask = async (name: string, dateToComplete: Date | undefined, priority: number | null) => {
+        const newTask = await useApi.createTask(listId, name, dateToComplete, priority)
 
-        // setTasks(prevTasks => prevTasks && ([
-        //     ...prevTasks,
-        //     task
-        // ]))
+        setList(prevList =>
+            prevList ? {
+                ...prevList,
+                task: [ ...prevList.task, newTask ]
+            } : null
+        )
     }
 
     const getList = async () => {
         const response = await useApi.getList(Number(listId))
 
-        console.log(response)
         setList(response)
     }
 
@@ -181,35 +164,7 @@ export default function List() {
                     <AddLabel onClick={() => openModal(setIsOpenAddLabelModal)} className="cursor-pointer hover:opacity-75" />
                 </div>
 
-                <div className="flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
-                    <input onChange={(e) => setNewTaskName(e.target.value)} type="text" placeholder="Criar nova tarefa" className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
-
-                    <div className="flex justify-between">
-                        <div className="flex gap-3">
-                            <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                {newTaskDate ? newTaskDate.toLocaleDateString() : `Data de realização`}
-
-                                <CalendarIcon />
-                            </button>
-
-                            <button onClick={() => openModal(setIsOpenPrioritySelect)} className="relative flex gap-2 items-center px-3 py-2 rounded-lg text-xs text-white-100 border border-white-100">
-                                {
-                                    newTaskPriority !== null ? priorityLabel[newTaskPriority] : 'Prioridade'
-                                }
-
-                                <PriorityIcon />
-
-                                {/* {
-                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
-                                } */}
-                            </button>
-                        </div>
-
-                        <button onClick={handleCreateTask} className="w-fit text-center px-[18px] py-[9.5px] text-sm text-white-100 bg-purple-300 rounded-lg">
-                            Criar
-                        </button>
-                    </div>
-                </div>
+                <CardNewTask handleCreateNewTask={handleCreateNewTask} />
 
                 {
                     filteredTasksNotChecked?.map((task, index) => (
@@ -228,20 +183,7 @@ export default function List() {
                         />
                     ))
                 }
-
-
             </main>
-
-            {
-                isOpenCalendarModal &&
-                <Calendar
-                    selected={newTaskDate}
-                    setSelected={setNewTaskDate}
-                    onClose={() => {
-                        closeModal(setIsOpenCalendarModal)
-                        handleDateTask(newTaskDate ? newTaskDate : null)
-                    }} />
-            }
 
             {
                 isOpenEmojiPicker && <EmojiPicker handleIconList={handleIconList} onClose={() => closeModal(setIsOpenEmojiPicker)} />
