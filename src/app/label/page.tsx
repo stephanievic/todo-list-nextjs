@@ -2,14 +2,15 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
-import CardLabel from "@/components/cardLabel"
-import Menu from "@/components/menu"
-import Search from "@/components/search"
-import { useUserStore } from "@/store/useUserStore"
-import { useApi } from "@/hooks/useApi"
-import Modal from "@/components/modal"
-import Input from "@/components/input"
 import Button from "@/components/button"
+import CardLabel from "@/components/cardLabel"
+import Input from "@/components/input"
+import Menu from "@/components/menu"
+import Modal from "@/components/modal"
+import Search from "@/components/search"
+
+import { useApi } from "@/hooks/useApi"
+import { useUserStore } from "@/store/useUserStore"
 
 interface Label {
     id: number
@@ -20,11 +21,13 @@ export default function Label() {
     const user = useUserStore(state => state.user)
 
     const [addLabelName, setAddLabelName] = useState<string>("")
+    const [editLabelName, setEditLabelName] = useState<string>("")
 
     const [labels, setLabels] = useState<Label[]>()
     const [searchLabel, setSearchLabel] = useState("")
 
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState(false)
+    const [isOpenEditLabelModal, setIsOpenEditLabelModal] = useState(false)
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
         setOpen(true)
@@ -34,16 +37,18 @@ export default function Label() {
         setClose(false)
     }
 
-    const searchFiltered = labels?.filter((label) => label.name.toLowerCase().includes(searchLabel.toLowerCase())) ?? []
-
+    const searchFiltered = (labels ?? []).filter((label) =>
+        label.name.toLowerCase().includes(searchLabel.toLowerCase())
+    );
     const addLabel = async () => {
-        if (addLabelName && user) {
+        if (addLabelName.trim() && user) {
             const response = await useApi.createLabel(addLabelName, user.id)
 
-            setLabels(prevLabels => prevLabels && [
-                ...prevLabels,
-                response
-            ])
+            setLabels(prevLabels => prevLabels && {
+                    ...prevLabels,
+                    response
+                } 
+            )
 
             closeModal(setIsOpenAddLabelModal)
         }
@@ -78,7 +83,7 @@ export default function Label() {
                                     searchFiltered?.length > 0 ? (
                                         <div className="flex flex-wrap gap-10">
                                             {searchFiltered?.map((search, index) => (
-                                                <CardLabel key={index} name={search.name} id={search.id} />
+                                                <CardLabel onClick={() => openModal(setIsOpenEditLabelModal)} key={index} name={search.name} id={search.id} />
                                             ))}
                                         </div>
                                     ) : (
@@ -91,7 +96,7 @@ export default function Label() {
                             <div className="flex flex-wrap gap-10">
                                 {
                                     labels?.map((label, index) => (
-                                        <CardLabel key={index} name={label.name} id={label.id} />
+                                        <CardLabel onClick={() => openModal(setIsOpenEditLabelModal)} key={index} name={label.name} id={label.id} />
                                     ))
                                 }
                             </div>
@@ -109,6 +114,18 @@ export default function Label() {
 
                         <div className="mx-auto">
                             <Button onClick={addLabel}>Criar</Button>
+                        </div>
+                    </Modal>
+                )
+            }
+
+            {
+                isOpenEditLabelModal && (
+                    <Modal title="Editar etiqueta" onClose={() => closeModal(setIsOpenEditLabelModal)}>
+                        <Input type="text" value={setEditLabelName} label="Editar nome" placeholder="Insira o novo nome" />
+
+                        <div className="mx-auto">
+                            <Button onClick={addLabel}>Salvar</Button>
                         </div>
                     </Modal>
                 )

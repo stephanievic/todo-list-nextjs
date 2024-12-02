@@ -7,7 +7,7 @@ interface EmojiPickerProps {
 
 export default function EmojiPicker({ handleIconList, onClose }: EmojiPickerProps) {
     return (
-        <div onClick={onClose} className="fixed inset-0 h-screen w-screen flex items-center justify-center bg-black-200 bg-opacity-75">
+        <div onClick={onClose} className="fixed inset-0 z-10 h-screen w-screen flex items-center justify-center bg-black-200 bg-opacity-75">
             <div onClick={(event) => event.stopPropagation()}>
                 <EmojiPickerModal
                     onEmojiClick={(emoji) => handleIconList(emoji.emoji)}

@@ -18,7 +18,7 @@ const cardLabelVariants = tv({
         iconSize: {
             small: "w-5 h-5",
             large: "w-6 h-6"
-        } 
+        }
     },
 
     defaultVariants: {
@@ -29,14 +29,15 @@ const cardLabelVariants = tv({
 })
 
 interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
-    name: string 
     id: number
+    name: string
+    onClick?: () => void
 }
 
-export default function CardLabel ({name, id, color, size, iconSize}:CardLabelProps) {
+export default function CardLabel({ name, id, color, onClick, size }: CardLabelProps) {
     return (
-        <div className={cardLabelVariants({color, size})}>
-            <TagIcon/>
+        <div onClick={onClick} className={cardLabelVariants({ color, size })}>
+            <TagIcon />
             <p>{name}</p>
         </div>
     )

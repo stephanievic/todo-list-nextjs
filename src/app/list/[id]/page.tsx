@@ -19,12 +19,23 @@ import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
 import PrioritySelect from "@/components/prioritySelect";
 
+import { useApi } from "@/hooks/useApi";
+import Input from "@/components/input";
+import { useRouter } from "next/navigation";
+
 interface ListProps {
     id: number
-    userId: number
     name: string
     icon: string
     isFavorite: boolean
+    labelOnList: any[],
+    task: {
+        id: number,
+        dateToComplete: Date | null,
+        isChecked: boolean,
+        name: string,
+        priority: number | null
+    }[]
 }
 
 export interface TaskProps {
@@ -36,8 +47,12 @@ export interface TaskProps {
 }
 
 export default function List() {
+    const router = useRouter()
+    const listId = 6
+
     const [list, setList] = useState<ListProps | null>(null)
-    const [tasks, setTasks] = useState<TaskProps[] | null>(null)
+    const [newListName, setNewListName] = useState("")
+
     const [newTaskDate, setNewTaskDate] = useState<Date>()
     const [newTaskName, setNewTaskName] = useState<string>("Criar nova tarefa")
     const [newTaskPriority, setNewTaskPriority] = useState<number | null>(null)
@@ -51,8 +66,8 @@ export default function List() {
     const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false)
     const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
-    const filteredTasksChecked = tasks?.filter(task => task.isChecked)
-    const filteredTasksNotChecked = tasks?.filter(task => !task.isChecked)
+    const filteredTasksChecked = list?.task?.filter(task => task.isChecked)
+    const filteredTasksNotChecked = list?.task?.filter(task => !task.isChecked)
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
         setOpen(true)
@@ -62,17 +77,47 @@ export default function List() {
         setClose(false)
     }
 
-    const handleIsFavorited = () => {
+    const handleNameList = async () => {
+        if (newListName.trim() && (newListName != list?.name)) {
+            await useApi.editListName(listId, newListName)
+
+            setList(prevList =>
+                prevList ? {
+                    ...prevList,
+                    name: newListName
+                } : null
+            )
+        }
+
+        closeModal(setIsOpenEditListModal)
+    }
+
+    const handleIconList = async (icon: string) => {
+        await useApi.updateIcon(listId, icon)
+
+        setList(prevList => prevList &&
+            ({
+                ...prevList,
+                icon
+            })
+        )
+
+        closeModal(setIsOpenEmojiPicker)
+    }
+
+    const handleIsFavorited = async () => {
+        await useApi.updateFavorite(Number(listId))
+
         setList(prevList => prevList && ({
             ...prevList,
             isFavorite: !prevList?.isFavorite
         }))
     }
 
-    const handleToggleChecked = (id: number) => {
-        setTasks(prevTasks => prevTasks && prevTasks.map(task =>
-            task.id === id ? { ...task, isChecked: !task.isChecked } : task
-        ))
+    const handleDeleteList = async () => {
+        await useApi.deleteList(listId)
+
+        router.push('/home')
     }
 
     const handleCreateTask = () => {
@@ -90,42 +135,44 @@ export default function List() {
         ]))
     }
 
-    const handleIconList = (emoji: string) => {
-        setList(prevList => prevList &&
-            ({
+    const handleToggleChecked = async (id: number) => {
+        await useApi.toggleChecked(id)
+
+        setList(prevList =>
+            prevList ? {
                 ...prevList,
-                icon: emoji
-            })
+                task: prevList.task.map(taskOnList =>
+                    taskOnList.id === id
+                        ? { ...taskOnList, isChecked: !taskOnList.isChecked }
+                        : taskOnList
+                )
+            } : null
         )
+    }
+
+    const handleDateTask = async (date: Date | null) => {
+
+        // setList(prevList => 
+        //     prevList ? 
+        //     {
+        //         ...prevList,
+        //         task: 
+        //     }
+        // )
     }
 
     const handlePriority = (value: number) => {
         setNewTaskPriority((prev) => (prev === value ? null : value))
     }
 
+    const getList = async () => {
+        const response = await useApi.getList(Number(listId))
+
+        setList(response)
+    }
+
     useEffect(() => {
-
-        setList({
-            id: 1,
-            userId: 123,
-            name: "Rotina",
-            icon: "❤️",
-            isFavorite: true
-        })
-
-        setTasks([{
-            id: 1,
-            name: "Rotina",
-            isChecked: true,
-            priority: 2,
-            dateToComplete: undefined
-        }, {
-            id: 2,
-            name: "Teste",
-            isChecked: false,
-            priority: 2,
-            dateToComplete: undefined
-        }])
+        getList()
     }, [])
 
     return (
@@ -182,7 +229,7 @@ export default function List() {
                                 <PriorityIcon />
 
                                 {
-                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)}/>
+                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
                                 }
                             </button>
                         </div>
@@ -199,10 +246,11 @@ export default function List() {
                             key={index}
                             id={task.id}
                             isChecked={task.isChecked}
-                            dateToComplete={task.dateToComplete}
+                            dateToComplete={task.dateToComplete ? task.dateToComplete : undefined}
                             name={task.name}
                             priority={task.priority}
                             toggleChecked={handleToggleChecked}
+                            handleDateTask={handleDateTask}
                         />
                     ))
                 }
@@ -213,10 +261,11 @@ export default function List() {
                             key={index}
                             id={task.id}
                             isChecked={task.isChecked}
-                            dateToComplete={task.dateToComplete}
+                            dateToComplete={task.dateToComplete ? task.dateToComplete : undefined}
                             name={task.name}
                             priority={task.priority}
                             toggleChecked={handleToggleChecked}
+                            handleDateTask={handleDateTask}
                         />
                     ))
                 }
@@ -225,7 +274,14 @@ export default function List() {
             </main>
 
             {
-                isOpenCalendarModal && <Calendar selected={newTaskDate} setSelected={setNewTaskDate} onClose={() => closeModal(setIsOpenCalendarModal)} />
+                isOpenCalendarModal &&
+                <Calendar
+                    selected={newTaskDate}
+                    setSelected={setNewTaskDate}
+                    onClose={() => {
+                        closeModal(setIsOpenCalendarModal)
+                        handleDateTask(newTaskDate ? newTaskDate : null)
+                    }} />
             }
 
             {
@@ -235,8 +291,12 @@ export default function List() {
             {
                 isOpenEditListModal && (
                     <Modal title="Editar lista" onClose={() => closeModal(setIsOpenEditListModal)}>
+                        {/* <div onClick={() => openModal(setIsOpenEmojiPicker)} className="text-5xl cursor-pointer hover:opacity-80">{list?.icon}</div> */}
+
+                        <Input type="text" value={setNewListName} label="Editar nome" placeholder={list ? list?.name : ''} />
+
                         <div className="flex justify-center gap-5">
-                            <Button>Salvar</Button>
+                            <Button onClick={handleNameList}>Salvar</Button>
                         </div>
                     </Modal>
                 )
@@ -248,7 +308,7 @@ export default function List() {
                         <p className="text-base text-black-200">Ao confirmar você excluirá a lista permanentemente. Deseja continuar?</p>
 
                         <div className="flex justify-center gap-5">
-                            <Button>Confirmar</Button>
+                            <Button onClick={handleDeleteList}>Confirmar</Button>
 
                             <Button onClick={() => closeModal(setIsOpenDeleteListModal)} variant="secondary">Cancelar</Button>
                         </div>

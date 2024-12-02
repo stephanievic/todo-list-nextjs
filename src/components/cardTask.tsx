@@ -17,11 +17,10 @@ export interface CardTaskProps {
     priority: number | null
     dateToComplete: Date | undefined
     toggleChecked: (id: number) => void
+    handleDateTask: (date: Date | null) => void
 }
 
-export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked }: CardTaskProps) {
-
-    const [changeIsChecked, setChangeIsChecked] = useState<boolean>(isChecked)
+export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked, handleDateTask }: CardTaskProps) {
     const [changePriority, setChangePriority] = useState<number | null>(priority)
     const [changeDateToComplete, setChangeDateToComplete] = useState<Date | undefined>(dateToComplete)
 
@@ -51,16 +50,16 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
     }
 
     return (
-        <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${changeIsChecked && 'opacity-60'}`}>
+        <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${isChecked && 'opacity-60'}`}>
             <div className="flex gap-2">
                 {
-                    changeIsChecked ?
+                    isChecked ?
                         <CheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                         :
                         <UncheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
                 }
                 {
-                    changeIsChecked ? (
+                    isChecked ? (
                         <h1 className="text-bold text-white-100 bg-transparent text-base line-through">{name}</h1>
                     ) : (
                         <input type="text" placeholder={name} className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
@@ -69,7 +68,7 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
             </div>
 
             {
-                !changeIsChecked && (
+                !isChecked && (
                     <div className="flex divide-x divide-solid">
                         <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 text-xs text-white-100">
                             <CalendarIcon />
@@ -87,7 +86,7 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
                             }
 
                             {
-                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect}/>
+                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect} />
                             }
                         </div>
                     </div>
@@ -95,7 +94,14 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
             }
 
             {
-                isOpenCalendarModal && <Calendar selected={changeDateToComplete} setSelected={setChangeDateToComplete} onClose={closeCalendarModal} />
+                isOpenCalendarModal &&
+                <Calendar
+                    selected={changeDateToComplete}
+                    setSelected={setChangeDateToComplete} 
+                    onClose={ () => {
+                        closeCalendarModal()
+                        handleDateTask(changeDateToComplete ? changeDateToComplete : null)
+                    }} />
             }
         </div>
     )
