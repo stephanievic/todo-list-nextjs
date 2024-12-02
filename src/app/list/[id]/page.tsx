@@ -28,22 +28,18 @@ interface ListProps {
     name: string
     icon: string
     isFavorite: boolean
-    labelOnList: any[],
+    labelOnList: {
+        label: {
+            name: string
+        }
+    }[],
     task: {
         id: number,
-        dateToComplete: Date | null,
+        dateToComplete: Date | undefined,
         isChecked: boolean,
         name: string,
         priority: number | null
     }[]
-}
-
-export interface TaskProps {
-    id: number
-    name: string
-    isChecked: boolean
-    priority: number | null
-    dateToComplete: Date | undefined
 }
 
 export default function List() {
@@ -121,53 +117,24 @@ export default function List() {
     }
 
     const handleCreateTask = () => {
-        const task = {
-            id: tasks ? tasks.length + 1 : 3,
-            name: newTaskName,
-            isChecked: false,
-            priority: newTaskPriority ? newTaskPriority : null,
-            dateToComplete: newTaskDate
-        }
+        // const task = {
+        //     id: tasks ? tasks.length + 1 : 3,
+        //     name: newTaskName,
+        //     isChecked: false,
+        //     priority: newTaskPriority ? newTaskPriority : null,
+        //     dateToComplete: newTaskDate
+        // }
 
-        setTasks(prevTasks => prevTasks && ([
-            ...prevTasks,
-            task
-        ]))
-    }
-
-    const handleToggleChecked = async (id: number) => {
-        await useApi.toggleChecked(id)
-
-        setList(prevList =>
-            prevList ? {
-                ...prevList,
-                task: prevList.task.map(taskOnList =>
-                    taskOnList.id === id
-                        ? { ...taskOnList, isChecked: !taskOnList.isChecked }
-                        : taskOnList
-                )
-            } : null
-        )
-    }
-
-    const handleDateTask = async (date: Date | null) => {
-
-        // setList(prevList => 
-        //     prevList ? 
-        //     {
-        //         ...prevList,
-        //         task: 
-        //     }
-        // )
-    }
-
-    const handlePriority = (value: number) => {
-        setNewTaskPriority((prev) => (prev === value ? null : value))
+        // setTasks(prevTasks => prevTasks && ([
+        //     ...prevTasks,
+        //     task
+        // ]))
     }
 
     const getList = async () => {
         const response = await useApi.getList(Number(listId))
 
+        console.log(response)
         setList(response)
     }
 
@@ -205,7 +172,11 @@ export default function List() {
                 </div>
 
                 <div className="flex gap-3 items-center">
-                    <CardLabel name={"Book"} id={0} color="secondary" size="small" iconSize="small" />
+                    {
+                        list?.labelOnList.map((labels, index) => (
+                            <CardLabel key={index} name={labels.label.name} id={0} color="secondary" size="small" iconSize="small" />
+                        ))
+                    }
 
                     <AddLabel onClick={() => openModal(setIsOpenAddLabelModal)} className="cursor-pointer hover:opacity-75" />
                 </div>
@@ -228,9 +199,9 @@ export default function List() {
 
                                 <PriorityIcon />
 
-                                {
+                                {/* {
                                     isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
-                                }
+                                } */}
                             </button>
                         </div>
 
@@ -244,13 +215,7 @@ export default function List() {
                     filteredTasksNotChecked?.map((task, index) => (
                         <CardTask
                             key={index}
-                            id={task.id}
-                            isChecked={task.isChecked}
-                            dateToComplete={task.dateToComplete ? task.dateToComplete : undefined}
-                            name={task.name}
-                            priority={task.priority}
-                            toggleChecked={handleToggleChecked}
-                            handleDateTask={handleDateTask}
+                            taskProperties={task}
                         />
                     ))
                 }
@@ -259,13 +224,7 @@ export default function List() {
                     filteredTasksChecked?.map((task, index) => (
                         <CardTask
                             key={index}
-                            id={task.id}
-                            isChecked={task.isChecked}
-                            dateToComplete={task.dateToComplete ? task.dateToComplete : undefined}
-                            name={task.name}
-                            priority={task.priority}
-                            toggleChecked={handleToggleChecked}
-                            handleDateTask={handleDateTask}
+                            taskProperties={task}
                         />
                     ))
                 }

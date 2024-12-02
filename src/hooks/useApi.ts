@@ -332,6 +332,54 @@ export const useApi = {
         fieldErrors: error.error || null,
       };
     }
-  } 
+  },
+
+  editPriorityTask: async (id: number, priority: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/task/${id}/priority`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          priority
+        })
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
+  editDateToComplete: async (id: number, date: Date | undefined) => {
+    try {
+      const response = await fetch(`http://localhost:3001/task/${id}/date`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date
+        })
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  }
 
 };

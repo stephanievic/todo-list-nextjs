@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import Calendar from "./calendar";
 
@@ -9,84 +9,107 @@ import CheckIcon from "../../public/Checked.svg";
 import PriorityIcon from "../../public/ExclamationCircle.svg";
 import UncheckIcon from "../../public/Unchecked.svg";
 import PrioritySelect from "./prioritySelect";
+import { useApi } from "@/hooks/useApi";
 
 export interface CardTaskProps {
-    id: number
-    name: string
-    isChecked: boolean
-    priority: number | null
-    dateToComplete: Date | undefined
-    toggleChecked: (id: number) => void
-    handleDateTask: (date: Date | null) => void
+    taskProperties: {
+        id: number,
+        dateToComplete: Date | undefined,
+        isChecked: boolean,
+        name: string,
+        priority: number | null
+    }
 }
 
-export default function CardTask({ id, name, isChecked, priority, dateToComplete, toggleChecked, handleDateTask }: CardTaskProps) {
-    const [changePriority, setChangePriority] = useState<number | null>(priority)
-    const [changeDateToComplete, setChangeDateToComplete] = useState<Date | undefined>(dateToComplete)
+interface TaskProps {
+    id: number,
+    dateToComplete: Date | undefined,
+    isChecked: boolean,
+    name: string,
+    priority: number | null
+}
+
+export default function CardTask({ taskProperties }: CardTaskProps) {
+    const [task, setTask] = useState<TaskProps>(taskProperties)
 
     const priorityLabel = ['Baixa', 'Média', 'Alta']
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
     const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
-    const openCalendarModal = () => {
-        setIsOpenCalendarModal(true)
+    const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
+        setOpen(true)
     }
 
-    const closeCalendarModal = () => {
-        setIsOpenCalendarModal(false)
+    const closeModal = (setClose: Dispatch<SetStateAction<boolean>>) => {
+        setClose(false)
     }
 
-    const openPrioritySelect = () => {
-        setIsOpenPrioritySelect(true)
+    const handleToggleChecked = async () => {
+        await useApi.toggleChecked(task.id)
+
+        setTask(prevTask => ({
+            ...prevTask,
+            isChecked: !task.isChecked
+        }))
     }
 
-    const closePrioritySelect = () => {
-        setIsOpenPrioritySelect(false)
+    const handleDateTask = async (date: Date | undefined) => {
+        await useApi.editDateToComplete(task.id, date)
+
+        setTask(prevTask => ({
+            ...prevTask,
+            dateToComplete: date
+        }))
     }
 
-    const handlePriority = (value: number) => {
-        setChangePriority((prev) => (prev === value ? null : value))
+    const handlePriority = async (value: number) => {
+        await useApi.editPriorityTask(task.id, value)
+
+        setTask(prevTask => ({
+            ...prevTask,
+            priority: value
+        }))
     }
 
     return (
-        <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${isChecked && 'opacity-60'}`}>
+        <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${task.isChecked && 'opacity-60'}`}>
             <div className="flex gap-2">
                 {
-                    isChecked ?
-                        <CheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
+                    task.isChecked ?
+                        <CheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
                         :
-                        <UncheckIcon onClick={() => toggleChecked(id)} className="cursor-pointer hover:opacity-75" />
+                        <UncheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
                 }
                 {
-                    isChecked ? (
-                        <h1 className="text-bold text-white-100 bg-transparent text-base line-through">{name}</h1>
+                    task.isChecked ? (
+                        <h1 className="text-bold text-white-100 bg-transparent text-base line-through">{task.name}</h1>
                     ) : (
-                        <input type="text" placeholder={name} className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
+                        <input type="text" placeholder={task.name} className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
                     )
                 }
             </div>
 
             {
-                !isChecked && (
+                !task.isChecked && (
                     <div className="flex divide-x divide-solid">
-                        <button onClick={openCalendarModal} className="flex gap-2 items-center px-3 text-xs text-white-100">
+                        <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 text-xs text-white-100">
                             <CalendarIcon />
 
                             {
-                                changeDateToComplete && changeDateToComplete.toLocaleDateString()
+                                task.dateToComplete != undefined && new Date(task.dateToComplete).toLocaleDateString()
                             }
                         </button>
 
-                        <div onClick={openPrioritySelect} className="relative flex gap-2 items-center pl-3 text-xs text-white-100 cursor-pointer">
+                        <div onClick={() => openModal(setIsOpenPrioritySelect)} className="relative flex gap-2 items-center pl-3 text-xs text-white-100 cursor-pointer">
                             <PriorityIcon />
 
                             {
-                                changePriority !== null && priorityLabel[changePriority]
+                                task.priority !== null && priorityLabel[task.priority]
                             }
 
                             {
-                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={closePrioritySelect} />
+                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
                             }
                         </div>
                     </div>
@@ -94,14 +117,13 @@ export default function CardTask({ id, name, isChecked, priority, dateToComplete
             }
 
             {
-                isOpenCalendarModal &&
-                <Calendar
-                    selected={changeDateToComplete}
-                    setSelected={setChangeDateToComplete} 
-                    onClose={ () => {
-                        closeCalendarModal()
-                        handleDateTask(changeDateToComplete ? changeDateToComplete : null)
-                    }} />
+                isOpenCalendarModal && (
+                    <Calendar
+                        selected={task.dateToComplete}
+                        setSelected={handleDateTask}
+                        onClose={() => { closeModal(setIsOpenCalendarModal) }}
+                    />
+                )
             }
         </div>
     )

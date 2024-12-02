@@ -5,7 +5,8 @@ import "react-day-picker/style.css";
 
 interface CalendarProps {
     selected?: Date
-    setSelected?: Dispatch<SetStateAction<Date | undefined>>
+    // setSelected?: Dispatch<SetStateAction<Date | undefined>>
+    setSelected: (date: Date | undefined) => void
     onClose: () => void
 }
 
@@ -17,7 +18,7 @@ export default function Calendar({ selected, setSelected, onClose }: CalendarPro
                     mode="single"
                     locale={ptBR}
                     selected={selected}
-                    onSelect={setSelected}
+                    onSelect={(date) => setSelected(date)}
                     classNames={{
                         day: `text-white`,
                         today: `text-purple-100`,
