@@ -19,15 +19,12 @@ interface Label {
 
 export default function Label() {
     const user = useUserStore(state => state.user)
-
-    const [addLabelName, setAddLabelName] = useState<string>("")
-    const [editLabelName, setEditLabelName] = useState<string>("")
-
+    
     const [labels, setLabels] = useState<Label[] | null>(null)
-    const [searchLabel, setSearchLabel] = useState("")
+    const [searchLabel, setSearchLabel] = useState<string>("")
+    const [addLabelName, setAddLabelName] = useState<string>("")
 
     const [isOpenAddLabelModal, setIsOpenAddLabelModal] = useState(false)
-    const [isOpenEditLabelModal, setIsOpenEditLabelModal] = useState(false)
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
         setOpen(true)
@@ -69,7 +66,7 @@ export default function Label() {
             <Menu />
 
             <main className='w-full ml-[312px] p-[60px] space-y-20' >
-                <div className="flex gap-6 items-center justify-center">
+                <div className="flex justify-center">
                     <Search placeholder="Buscar etiqueta" addItem={() => openModal(setIsOpenAddLabelModal)} searchItem={setSearchLabel} />
                 </div>
 
@@ -81,7 +78,7 @@ export default function Label() {
                                     searchFiltered?.length > 0 ? (
                                         <div className="flex flex-wrap gap-10">
                                             {searchFiltered?.map((search, index) => (
-                                                <CardLabel onClick={() => openModal(setIsOpenEditLabelModal)} key={index} name={search.name} id={search.id} />
+                                                <CardLabel key={index} name={search.name} id={search.id} />
                                             ))}
                                         </div>
                                     ) : (
@@ -94,12 +91,10 @@ export default function Label() {
                             <div className="flex flex-wrap gap-10">
                                 {
                                     labels?.map((label, index) => (
-                                        <CardLabel onClick={() => openModal(setIsOpenEditLabelModal)} key={index} name={label.name} id={label.id} />
+                                        <CardLabel key={index} name={label.name} id={label.id} />
                                     ))
                                 }
                             </div>
-
-
                         )
                     }
                 </section>
@@ -112,18 +107,6 @@ export default function Label() {
 
                         <div className="mx-auto">
                             <Button onClick={addLabel}>Criar</Button>
-                        </div>
-                    </Modal>
-                )
-            }
-
-            {
-                isOpenEditLabelModal && (
-                    <Modal title="Editar etiqueta" onClose={() => closeModal(setIsOpenEditLabelModal)}>
-                        <Input type="text" value={setEditLabelName} label="Editar nome" placeholder="Insira o novo nome" />
-
-                        <div className="mx-auto">
-                            <Button onClick={addLabel}>Salvar</Button>
                         </div>
                     </Modal>
                 )

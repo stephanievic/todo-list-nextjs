@@ -1,3 +1,4 @@
+import { useApi } from "@/hooks/useApi"
 import { create } from "zustand"
 
 interface UserStore {
@@ -15,10 +16,11 @@ export const useUserStore = create<UserStore>((set) => ({
     exit: () => {
         set({ user: null })
     },
-    initializeUser: () => {
-        //cookie
+    initializeUser: async() => {
+        const response: User = await useApi.userLogged()
 
-        // validar se existe
-            // caso exista -> enviar token para backend e retorna usuário
+        console.log(response)
+
+        set({ user: response })
     }
 }))

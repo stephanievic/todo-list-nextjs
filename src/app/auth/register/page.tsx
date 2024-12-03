@@ -29,14 +29,10 @@ export default function Register() {
         if (password === confirmPassword) {
             try {
                 const response = await useApi.register(username, email, password)
-                console.log(response)
+                
                 userCreate(response)
-                if (user) {
-                    router.push('/home')
-                } else {
-                    console.log('error')
-                    throw new Error()
-                }
+                
+                router.push('/home')
             } catch (error: any) {
                 if (error.fieldErrors) {
                     const firstErrorKey = Object.keys(error.fieldErrors)?.[0]

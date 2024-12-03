@@ -6,6 +6,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           email,
           password,
@@ -34,11 +35,38 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           username,
           email,
           password,
         }),
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+
+      const data = await response.json();
+
+      return data.user;
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
+  userLogged: async () => {
+    try {
+      const response = await fetch("http://localhost:3001/user/logged", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -64,6 +92,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name,
           userId,
@@ -94,6 +123,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -119,6 +149,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           userId,
         }),
@@ -147,6 +178,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           userId,
         }),
@@ -175,6 +207,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name,
         }),
@@ -199,6 +232,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -220,6 +254,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           icon,
         })
@@ -244,6 +279,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           labels,
         })
@@ -268,6 +304,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -290,6 +327,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           userId,
         }),
@@ -318,6 +356,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name,
           userId,
@@ -329,8 +368,34 @@ export const useApi = {
         throw errorResponse;
       }
 
-      const data = await response.json() 
-      return data.labels
+      const data = await response.json()
+      return data.createdLabel
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
+  editLabelName: async (id: number, name: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/label/${id}/name`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          id,
+          name
+        }),
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
     } catch (error: any) {
       throw {
         message: error.message || "Erro inesperado.",
@@ -347,6 +412,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           listId,
           name,
@@ -378,6 +444,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -399,6 +466,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           priority
         })
@@ -423,6 +491,7 @@ export const useApi = {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           date
         })

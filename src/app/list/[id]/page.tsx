@@ -1,7 +1,7 @@
 'use client'
 
 import { Dispatch, FormEvent, FormEventHandler, SetStateAction, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 
 import Menu from "@/components/menu";
@@ -46,15 +46,14 @@ interface LabelProps {
 }
 
 export default function List() {
+    const { id } = useParams<{ id: string }>()  
+
     const user = useUserStore((state) => state.user)
     const router = useRouter()
-
-    const listId = 6
-
+    
+    const [newListName, setNewListName] = useState<string>("")
     const [list, setList] = useState<ListProps | null>(null)
     const [labels, setLabels] = useState<LabelProps[]>([])
-
-    const [newListName, setNewListName] = useState<string>("")
     const [selectedLabels, setSelectedLabels] = useState<LabelProps[]>([])
 
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
@@ -75,7 +74,7 @@ export default function List() {
 
     const handleNameList = async () => {
         if (newListName.trim() && (newListName != list?.name)) {
-            await useApi.editListName(listId, newListName)
+            await useApi.editListName(Number(id), newListName)
 
             setList(prevList =>
                 prevList ? {
@@ -89,7 +88,7 @@ export default function List() {
     }
 
     const handleIconList = async (icon: string) => {
-        await useApi.updateIcon(listId, icon)
+        await useApi.updateIcon(Number(id), icon)
 
         setList(prevList => prevList &&
             ({
@@ -102,7 +101,7 @@ export default function List() {
     }
 
     const handleIsFavorited = async () => {
-        await useApi.updateFavorite(Number(listId))
+        await useApi.updateFavorite(Number(id))
 
         setList(prevList => prevList && ({
             ...prevList,
@@ -111,7 +110,7 @@ export default function List() {
     }
 
     const handleDeleteList = async () => {
-        await useApi.deleteList(listId)
+        await useApi.deleteList(Number(id))
 
         router.push('/home')
     }
@@ -137,7 +136,7 @@ export default function List() {
     const handleLabels = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        await useApi.updateLabels(listId, selectedLabels)
+        await useApi.updateLabels(Number(id), selectedLabels)
 
         const formattedLabels = selectedLabels.map(selectedLabel => {
             return { label: { id: selectedLabel.id, name: selectedLabel.name } }
@@ -154,7 +153,7 @@ export default function List() {
     }
 
     const handleCreateNewTask = async (name: string, dateToComplete: Date | undefined, priority: number | null) => {
-        const newTask = await useApi.createTask(listId, name, dateToComplete, priority)
+        const newTask = await useApi.createTask(Number(id), name, dateToComplete, priority)
 
         setList(prevList =>
             prevList ? {
@@ -165,7 +164,7 @@ export default function List() {
     }
 
     const getList = async () => {
-        const response = await useApi.getList(Number(listId))
+        const response = await useApi.getList(Number(id))
 
         setList(response)
     }
@@ -191,7 +190,7 @@ export default function List() {
 
             <main className='w-full h-full ml-[312px] p-[60px] space-y-5'>
                 <div className="space-y-5 m-0">
-                    <div className="text-6xl" onClick={() => openModal(setIsOpenEmojiPicker)}>
+                    <div className="text-6xl cursor-pointer hover:opacity-80" onClick={() => openModal(setIsOpenEmojiPicker)}>
                         {list?.icon}
                     </div>
 
