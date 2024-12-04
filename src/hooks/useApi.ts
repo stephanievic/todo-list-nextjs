@@ -85,6 +85,28 @@ export const useApi = {
     }
   },
 
+  logout: async () => {
+    try {
+      const response = await fetch("http://localhost:3001/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
   createList: async (name: string, userId: number, icon: string) => {
     try {
       const response = await fetch("http://localhost:3001/list/create", {

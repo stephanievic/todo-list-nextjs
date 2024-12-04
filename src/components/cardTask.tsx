@@ -8,8 +8,11 @@ import CalendarIcon from "../../public/CalendarEvent.svg";
 import CheckIcon from "../../public/Checked.svg";
 import PriorityIcon from "../../public/ExclamationCircle.svg";
 import UncheckIcon from "../../public/Unchecked.svg";
+import TrashIcon from "../../public/Trash.svg";
 import PrioritySelect from "./prioritySelect";
 import { useApi } from "@/hooks/useApi";
+import Modal from "./modal";
+import Button from "./button";
 
 export interface CardTaskProps {
     taskProperties: {
@@ -35,6 +38,7 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
     const priorityLabel = ['Baixa', 'Média', 'Alta']
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
+    const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
@@ -91,7 +95,7 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
             </div>
 
             {
-                !task.isChecked && (
+                !task.isChecked ? (
                     <div className="flex divide-x divide-solid">
                         <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 text-xs text-white-100">
                             <CalendarIcon />
@@ -113,6 +117,10 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
                             }
                         </div>
                     </div>
+                ) : (
+                    <div>
+                        <TrashIcon />
+                    </div>
                 )
             }
 
@@ -124,6 +132,14 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
                         onClose={() => { closeModal(setIsOpenCalendarModal) }}
                     />
                 )
+            }
+
+            {
+                <Modal title="Excluir tarefa" onClose={() => setIsOpenDeleteListModal(false)}>
+                    <div>
+                        <Button>Excluir</Button>
+                    </div>
+                </Modal>
             }
         </div>
     )

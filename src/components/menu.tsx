@@ -44,8 +44,11 @@ export default function Menu() {
         }
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         userLogout()
+
+        await useApi.logout()
+
         router.push('/')
     }
 
