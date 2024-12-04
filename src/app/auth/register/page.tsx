@@ -12,7 +12,6 @@ import MessageError from "@/components/messageError";
 import { useUserStore } from "@/store/useUserStore";
 
 export default function Register() {
-    const user = useUserStore(state => state.user)
     const userCreate = useUserStore(state => state.setUser)
     const router = useRouter()
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, FormEvent, FormEventHandler, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 
@@ -46,11 +46,11 @@ interface LabelProps {
 }
 
 export default function List() {
-    const { id } = useParams<{ id: string }>()  
+    const { id } = useParams<{ id: string }>()
 
     const user = useUserStore((state) => state.user)
     const router = useRouter()
-    
+
     const [newListName, setNewListName] = useState<string>("")
     const [list, setList] = useState<ListProps | null>(null)
     const [labels, setLabels] = useState<LabelProps[]>([])
@@ -72,7 +72,7 @@ export default function List() {
         setClose(false)
     }
 
-    const handleNameList = async () => {
+    const handleListName = async () => {
         if (newListName.trim() && (newListName != list?.name)) {
             await useApi.editListName(Number(id), newListName)
 
@@ -142,10 +142,10 @@ export default function List() {
             return { label: { id: selectedLabel.id, name: selectedLabel.name } }
         })
 
-        setList(prevList => 
+        setList(prevList =>
             prevList ? {
                 ...prevList,
-                labelOnList: formattedLabels 
+                labelOnList: formattedLabels
             } : null
         )
 
@@ -173,7 +173,6 @@ export default function List() {
         if (user) {
             const labels = await useApi.getAllLabels(user.id)
 
-            console.log(labels)
             setLabels(labels)
         }
     }
@@ -256,7 +255,7 @@ export default function List() {
                         <Input type="text" value={setNewListName} label="Editar nome" placeholder={list ? list?.name : ''} />
 
                         <div className="flex justify-center gap-5">
-                            <Button onClick={handleNameList}>Salvar</Button>
+                            <Button onClick={handleListName}>Salvar</Button>
                         </div>
                     </Modal>
                 )
@@ -283,7 +282,7 @@ export default function List() {
                             {
                                 labels?.map((label, index) => (
                                     <div key={index} className="flex gap-2 items-center">
-                                        <input type="checkbox" id={`label-${label.id}`} name={`label-${label.id}`} value={label.id} onChange={handleCheckboxChange} className="h-5 w-5" />
+                                        <input type="checkbox" id={`label-${label.id}`} name={`label-${label.id}`} value={label.id} onChange={handleCheckboxChange} checked={list?.labelOnList.some(item => item.label.id === label.id)} className="h-5 w-5" />
 
                                         <label htmlFor={`label-${label.id}`} className="font-bold text-black-200">{label.name}</label>
                                     </div>
