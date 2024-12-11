@@ -3,6 +3,7 @@
 import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
+import { useUserStore } from "@/store/useUserStore";
 
 import Menu from "@/components/menu";
 import Button from "@/components/button";
@@ -11,14 +12,15 @@ import CardTask from "@/components/cardTask";
 import EmojiPicker from "@/components/emojiPicker";
 import Modal from "@/components/modal";
 import Input from "@/components/input";
+import CardNewTask from "./components/cardNewTask";
 
 import EditIcon from "../../../../public/PencilSquare.svg";
 import AddLabel from "../../../../public/PlusCircleFill.svg";
 import StarFavorite from "../../../../public/Star.svg";
 import StarFilled from "../../../../public/StarFilled.svg";
 import DeleteIcon from "../../../../public/Trash.svg";
-import CardNewTask from "./components/cardNewTask";
-import { useUserStore } from "@/store/useUserStore";
+import CheckIcon from "../../../../public/Checked.svg";
+import UncheckIcon from "../../../../public/Unchecked.svg";
 
 interface ListProps {
     id: number
@@ -43,7 +45,7 @@ interface ListProps {
 interface LabelProps {
     id: number
     name: string
-}
+}[]
 
 export default function List() {
     const { id } = useParams<{ id: string }>()
@@ -54,7 +56,6 @@ export default function List() {
     const [newListName, setNewListName] = useState<string>("")
     const [list, setList] = useState<ListProps | null>(null)
     const [labels, setLabels] = useState<LabelProps[]>([])
-    const [selectedLabels, setSelectedLabels] = useState<LabelProps[]>([])
 
     const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
     const [isOpenEditListModal, setIsOpenEditListModal] = useState<boolean>(false)
@@ -115,35 +116,25 @@ export default function List() {
         router.push('/home')
     }
 
-    const toggleSelection = (id: number, name: string) => {
-        setSelectedLabels((prevSelected) => {
-            const newSelected = [...prevSelected];
-            const index = newSelected.findIndex((list) => list.id === id);
-
-            if (index === -1) {
-                // Se a lista não está selecionada, adiciona ela
-                newSelected.push({ id, name });
-            } else {
-                // Se a lista está selecionada, remove ela
-                newSelected.splice(index, 1);
-            }
-
-            return newSelected;
-        });
-    };
+    const handleToggleLabel = (labelClicked: { id: number, name: string }) => {
+        setList(prevList => 
+            prevList ? {
+                ...prevList,
+                labelOnList: 
+                    prevList.labelOnList.some(labels => labels.label.id === labelClicked.id) ? 
+                        prevList.labelOnList.filter(labels => labels.label.id !== labelClicked.id) :
+                        [...prevList.labelOnList, { label:  labelClicked }]
+            } : null
+        )
+    }
 
     const handleLabels = async () => {
-        await useApi.updateLabels(Number(id), selectedLabels)
+        const formattedLabelList = list?.labelOnList.map(labels => ({
+            id: labels.label.id,
+            name: labels.label.name
+        }))
 
-        setList((prevList) => {
-            if (prevList) {
-                return {
-                    ...prevList,
-                    labelOnList: selectedLabels,
-                };
-            }
-            return prevList
-        });
+        await useApi.updateLabels(Number(id), formattedLabelList)
 
         closeModal(setIsOpenAddLabelModal)
     }
@@ -180,7 +171,6 @@ export default function List() {
         if (user) {
             const labels = await useApi.getAllLabels(user.id)
 
-            console.log(labels)
             setLabels(labels)
         }
     }
@@ -223,7 +213,7 @@ export default function List() {
                 <div className="flex gap-3 items-center">
                     {
                         list?.labelOnList.map((labels, index) => (
-                            <CardLabel key={index} name={labels.label.name} id={0} color="secondary" size="small" iconSize="small" />
+                            <CardLabel key={labels.label.id} name={labels.label.name} id={0} color="secondary" size="small" iconSize="small" />
                         ))
                     }
 
@@ -260,8 +250,6 @@ export default function List() {
             {
                 isOpenEditListModal && (
                     <Modal title="Editar lista" onClose={() => closeModal(setIsOpenEditListModal)}>
-                        {/* <div onClick={() => openModal(setIsOpenEmojiPicker)} className="text-5xl cursor-pointer hover:opacity-80">{list?.icon}</div> */}
-
                         <Input type="text" value={setNewListName} label="Editar nome" placeholder={list ? list?.name : ''} />
 
                         <div className="flex justify-center gap-5">
@@ -291,22 +279,23 @@ export default function List() {
                         {
                             labels.length > 0 ? (
                                 <div>
-                                    <form>
-                                        {labels.map((label, index) => (
-                                            <div key={index} className="flex gap-2 items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`list-${label.id}`}
-                                                    checked={selectedLabels.some((selected) => selected.id === label.id)}
-                                                    onChange={() => toggleSelection(label.id, label.name)}
-                                                    className="h-5 w-5"
-                                                />
-                                                <label htmlFor={`list-${label.id}`} className="font-bold text-black-200">
-                                                    {label.name}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </form>
+                                    <div className="space-y-2">
+                                        {
+                                            labels.map(label => (
+                                                <div key={label.id} onClick={() => handleToggleLabel(label)} className="flex gap-2 items-center"> 
+                                                    {
+                                                        list?.labelOnList.some(labels => labels.label.id === label.id) ? (
+                                                            <CheckIcon />
+                                                        ) : (
+                                                            <UncheckIcon />
+                                                        )
+                                                    }
+
+                                                    <h2 className="font-bold text-black-200">{label.name}</h2>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
 
                                     <div className="flex justify-center">
                                         <Button onClick={handleLabels}>Salvar</Button>

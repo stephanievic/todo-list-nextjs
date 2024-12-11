@@ -294,7 +294,7 @@ export const useApi = {
     }
   },
 
-  updateLabels: async (id: number, labels: { id: number, name: string }[]) => {
+  updateLabels: async (id: number, labels: { id: number, name: string }[] | undefined) => {
     try {
       const response = await fetch(`http://localhost:3001/list/${id}/labels`, {
         method: "PATCH",
