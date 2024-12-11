@@ -41,9 +41,10 @@ const cardLabelVariants = tv({
 interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
     id: number
     name: string
+    handleDeleteLabel: (labelToRemove: number) => void
 }
 
-export default function CardLabel({ name, id, color, size }: CardLabelProps) {
+export default function CardLabel({ name, id, color, size, handleDeleteLabel }: CardLabelProps) {
     const [labelName, setLabelName] = useState<string>(name)
     const [editLabelName, setEditLabelName] = useState<string>("")
 
@@ -56,12 +57,6 @@ export default function CardLabel({ name, id, color, size }: CardLabelProps) {
             setLabelName(editLabelName)
             setIsOpenEditLabelModal(false)
         }
-    }
-
-    const handleDeleteLabel = async () => {
-        await useApi.deleteLabel(id)
-
-        setIsOpenEditLabelModal(false)
     }
 
     return (
@@ -88,7 +83,10 @@ export default function CardLabel({ name, id, color, size }: CardLabelProps) {
                             <div className="flex justify-between">
                                 <p className="text-black-200">Excluir permanentemente esta etiqueta.</p>
 
-                                <TrashIcon onClick={handleDeleteLabel} className="cursor-pointer hover:opacity-80"/>
+                                <TrashIcon onClick={() => {
+                                    handleDeleteLabel(id)
+                                    setIsOpenEditLabelModal(false)
+                                }} className="cursor-pointer hover:opacity-80"/>
                             </div>
                         </div>
                     </Modal>

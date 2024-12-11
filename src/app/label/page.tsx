@@ -49,6 +49,14 @@ export default function Label() {
         }
     }
 
+    const handleDeleteLabel = async (labelToDelete: number) => {
+        await useApi.deleteLabel(labelToDelete)
+
+        setLabels(prevLabels =>
+            prevLabels ? prevLabels.filter(label => label.id !== labelToDelete) : null
+        )        
+    }
+
     const getAllLabels = async () => {
         if (user) {
             const response = await useApi.getAllLabels(user.id)
@@ -77,8 +85,8 @@ export default function Label() {
                                 {
                                     searchFiltered?.length > 0 ? (
                                         <div className="flex flex-wrap gap-10">
-                                            {searchFiltered?.map((search, index) => (
-                                                <CardLabel key={index} name={search.name} id={search.id} />
+                                            {searchFiltered?.map((search) => (
+                                                <CardLabel key={search.id} name={search.name} id={search.id} handleDeleteLabel={handleDeleteLabel} />
                                             ))}
                                         </div>
                                     ) : (
@@ -90,8 +98,8 @@ export default function Label() {
                         ) : (
                             <div className="flex flex-wrap gap-10">
                                 {
-                                    labels?.map((label, index) => (
-                                        <CardLabel key={index} name={label.name} id={label.id} />
+                                    labels?.map((label) => (
+                                        <CardLabel key={label.id} name={label.name} id={label.id} handleDeleteLabel={handleDeleteLabel} />
                                     ))
                                 }
                             </div>
