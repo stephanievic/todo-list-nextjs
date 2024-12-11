@@ -160,7 +160,7 @@ export default function List() {
     }
 
     const handleDeleteTask = async (taskId: number) => {
-        // await useApi.deleteTask(taskId)
+        await useApi.deleteTask(taskId)
 
         setList(prevList =>
             prevList ? {
@@ -233,9 +233,9 @@ export default function List() {
                 <CardNewTask handleCreateNewTask={handleCreateNewTask} />
 
                 {
-                    filteredTasksNotChecked?.map((task, index) => (
+                    filteredTasksNotChecked?.map((task) => (
                         <CardTask
-                            key={index}
+                            key={task.id}
                             taskProperties={task}
                             handleDeleteTask={handleDeleteTask}
                         />
@@ -243,9 +243,9 @@ export default function List() {
                 }
 
                 {
-                    filteredTasksChecked?.map((task, index) => (
+                    filteredTasksChecked?.map((task) => (
                         <CardTask
-                            key={index}
+                            key={task.id}
                             taskProperties={task}
                             handleDeleteTask={handleDeleteTask}
                         />

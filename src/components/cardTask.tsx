@@ -79,52 +79,54 @@ export default function CardTask({ taskProperties, handleDeleteTask }: CardTaskP
     }
 
     return (
-        <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${task.isChecked && 'opacity-60'}`}>
-            <div className="flex gap-2">
+        <>
+            <div className={`flex justify-between p-5 border border-white-100 rounded-lg ${task.isChecked && 'opacity-60'}`}>
+                <div className="flex gap-2">
+                    {
+                        task.isChecked ?
+                            <CheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
+                            :
+                            <UncheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
+                    }
+                    {
+                        task.isChecked ? (
+                            <h1 className="text-bold text-white-100 bg-transparent text-base line-through">{task.name}</h1>
+                        ) : (
+                            <input type="text" placeholder={task.name} className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
+                        )
+                    }
+                </div>
+
                 {
-                    task.isChecked ?
-                        <CheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
-                        :
-                        <UncheckIcon onClick={handleToggleChecked} className="cursor-pointer hover:opacity-75" />
-                }
-                {
-                    task.isChecked ? (
-                        <h1 className="text-bold text-white-100 bg-transparent text-base line-through">{task.name}</h1>
+                    !task.isChecked ? (
+                        <div className="flex divide-x divide-solid">
+                            <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 text-xs text-white-100">
+                                <CalendarIcon />
+
+                                {
+                                    task.dateToComplete != undefined && new Date(task.dateToComplete).toLocaleDateString()
+                                }
+                            </button>
+
+                            <div onClick={() => openModal(setIsOpenPrioritySelect)} className="relative flex gap-2 items-center pl-3 text-xs text-white-100 cursor-pointer">
+                                <PriorityIcon />
+
+                                {
+                                    task.priority !== null && priorityLabel[task.priority]
+                                }
+
+                                {
+                                    isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
+                                }
+                            </div>
+                        </div>
                     ) : (
-                        <input type="text" placeholder={task.name} className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
+                        <div>
+                            <TrashIcon onClick={() => openModal(setIsOpenDeleteTaskModal)} className="cursor-pointer hover:opacity-80" />
+                        </div>
                     )
                 }
             </div>
-
-            {
-                !task.isChecked ? (
-                    <div className="flex divide-x divide-solid">
-                        <button onClick={() => openModal(setIsOpenCalendarModal)} className="flex gap-2 items-center px-3 text-xs text-white-100">
-                            <CalendarIcon />
-
-                            {
-                                task.dateToComplete != undefined && new Date(task.dateToComplete).toLocaleDateString()
-                            }
-                        </button>
-
-                        <div onClick={() => openModal(setIsOpenPrioritySelect)} className="relative flex gap-2 items-center pl-3 text-xs text-white-100 cursor-pointer">
-                            <PriorityIcon />
-
-                            {
-                                task.priority !== null && priorityLabel[task.priority]
-                            }
-
-                            {
-                                isOpenPrioritySelect && <PrioritySelect handlePriority={handlePriority} onClose={() => closeModal(setIsOpenPrioritySelect)} />
-                            }
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <TrashIcon onClick={() => openModal(setIsOpenDeleteTaskModal)} className="cursor-pointer hover:opacity-80"/>
-                    </div>
-                )
-            }
 
             {
                 isOpenCalendarModal && (
@@ -142,12 +144,17 @@ export default function CardTask({ taskProperties, handleDeleteTask }: CardTaskP
                         <p className="text-black-200">Você deseja excluir esta tarefa?</p>
 
                         <div className="flex justify-center gap-5">
-                            <Button onClick={() => handleDeleteTask(task.id)}>Excluir</Button>
+                            <Button
+                                onClick={() => {
+                                    handleDeleteTask(task.id)
+                                    closeModal(setIsOpenDeleteTaskModal)
+                                }}
+                            >Excluir</Button>
                             <Button onClick={() => closeModal(setIsOpenDeleteTaskModal)} variant="secondary" >Cancelar</Button>
                         </div>
                     </Modal>
                 )
             }
-        </div>
+        </>
     )
 };
