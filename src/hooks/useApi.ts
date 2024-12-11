@@ -426,6 +426,28 @@ export const useApi = {
     }
   },
 
+  deleteLabel: async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/label/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  },
+
   // TASK
   createTask: async (listId: number, name: string, dateToComplete: Date | undefined, priority: number | null) => {
     try {

@@ -139,7 +139,7 @@ export default function CardTask({ taskProperties, handleDeleteTask }: CardTaskP
             {
                 isOpenDeleteTaskModal && (
                     <Modal title="Excluir tarefa" onClose={() => closeModal(setIsOpenDeleteTaskModal)}>
-                        <p>Você deseja excluir esta tarefa?</p>
+                        <p className="text-black-200">Você deseja excluir esta tarefa?</p>
 
                         <div className="flex justify-center gap-5">
                             <Button onClick={() => handleDeleteTask(task.id)}>Excluir</Button>

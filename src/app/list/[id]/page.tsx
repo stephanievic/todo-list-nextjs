@@ -115,39 +115,35 @@ export default function List() {
         router.push('/home')
     }
 
-    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const labelId = parseInt(event.target.value)
+    const toggleSelection = (id: number, name: string) => {
+        setSelectedLabels((prevSelected) => {
+            const newSelected = [...prevSelected];
+            const index = newSelected.findIndex((list) => list.id === id);
 
-        setSelectedLabels(prevSelectedLabels => {
-            if (event.target.checked) {
-                const selectedLabel = labels.find(label => label.id === labelId)
-
-                if (selectedLabel) {
-                    return [...prevSelectedLabels, selectedLabel]
-                }
+            if (index === -1) {
+                // Se a lista não está selecionada, adiciona ela
+                newSelected.push({ id, name });
             } else {
-                return prevSelectedLabels?.filter(label => label.id !== labelId)
+                // Se a lista está selecionada, remove ela
+                newSelected.splice(index, 1);
             }
 
-            return prevSelectedLabels
-        })
-    }
+            return newSelected;
+        });
+    };
 
-    const handleLabels = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
+    const handleLabels = async () => {
         await useApi.updateLabels(Number(id), selectedLabels)
 
-        const formattedLabels = selectedLabels.map(selectedLabel => {
-            return { label: { id: selectedLabel.id, name: selectedLabel.name } }
-        })
-
-        setList(prevList =>
-            prevList ? {
-                ...prevList,
-                labelOnList: formattedLabels
-            } : null
-        )
+        setList((prevList) => {
+            if (prevList) {
+                return {
+                    ...prevList,
+                    labelOnList: selectedLabels,
+                };
+            }
+            return prevList
+        });
 
         closeModal(setIsOpenAddLabelModal)
     }
@@ -166,7 +162,7 @@ export default function List() {
     const handleDeleteTask = async (taskId: number) => {
         // await useApi.deleteTask(taskId)
 
-        setList(prevList => 
+        setList(prevList =>
             prevList ? {
                 ...prevList,
                 task: prevList.task.filter(task => task.id !== taskId)
@@ -184,10 +180,11 @@ export default function List() {
         if (user) {
             const labels = await useApi.getAllLabels(user.id)
 
+            console.log(labels)
             setLabels(labels)
         }
     }
- 
+
     useEffect(() => {
         getList()
 
@@ -291,21 +288,34 @@ export default function List() {
             {
                 isOpenAddLabelModal && (
                     <Modal title="Adicionar etiqueta" onClose={() => closeModal(setIsOpenAddLabelModal)}>
-                        <form onSubmit={(event: FormEvent<HTMLFormElement>) => handleLabels(event)}>
-                            {
-                                labels?.map((label, index) => (
-                                    <div key={index} className="flex gap-2 items-center">
-                                        <input type="checkbox" id={`label-${label.id}`} name={`label-${label.id}`} value={label.id} onChange={handleCheckboxChange} checked={list?.labelOnList.some(item => item.label.id === label.id)} className="h-5 w-5" />
+                        {
+                            labels.length > 0 ? (
+                                <div>
+                                    <form>
+                                        {labels.map((label, index) => (
+                                            <div key={index} className="flex gap-2 items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`list-${label.id}`}
+                                                    checked={selectedLabels.some((selected) => selected.id === label.id)}
+                                                    onChange={() => toggleSelection(label.id, label.name)}
+                                                    className="h-5 w-5"
+                                                />
+                                                <label htmlFor={`list-${label.id}`} className="font-bold text-black-200">
+                                                    {label.name}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </form>
 
-                                        <label htmlFor={`label-${label.id}`} className="font-bold text-black-200">{label.name}</label>
+                                    <div className="flex justify-center">
+                                        <Button onClick={handleLabels}>Salvar</Button>
                                     </div>
-                                ))
-                            }
-
-                            <div className="flex justify-center gap-5">
-                                <Button type="submit">Salvar</Button>
-                            </div>
-                        </form>
+                                </div>
+                            ) : (
+                                <p className="text-black-200 text-center">Não há etiquetas criadas!</p>
+                            )
+                        }
                     </Modal>
                 )
             }

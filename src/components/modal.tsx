@@ -8,7 +8,7 @@ interface ModalProps {
 
 export default function Modal({ title, children, onClose }: ModalProps) {
     return (
-        <div className="fixed inset-0 h-screen w-screen flex items-center justify-center bg-black-200 bg-opacity-75"
+        <div className="z-20 fixed inset-0 h-screen w-screen flex items-center justify-center bg-black-200 bg-opacity-75"
             onClick={onClose}
         >
             <div onClick={(e) => e.stopPropagation()} className="w-[535px] flex flex-col gap-10 p-5 bg-white-50 rounded-[20px] opacity-80">

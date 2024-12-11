@@ -1,9 +1,14 @@
 import { useState } from "react";
-import TagIcon from "../../public/Tag.svg"
 import { tv, VariantProps } from 'tailwind-variants';
+
 import Modal from "./modal";
 import Input from "./input";
 import Button from "./button";
+
+import TagIcon from "../../public/Tag.svg";
+import TrashIcon from "../../public/Trash.svg";
+
+
 import { useApi } from "@/hooks/useApi";
 
 const cardLabelVariants = tv({
@@ -36,10 +41,9 @@ const cardLabelVariants = tv({
 interface CardLabelProps extends VariantProps<typeof cardLabelVariants> {
     id: number
     name: string
-    onClick?: () => void
 }
 
-export default function CardLabel({ name, id, color, onClick, size }: CardLabelProps) {
+export default function CardLabel({ name, id, color, size }: CardLabelProps) {
     const [labelName, setLabelName] = useState<string>(name)
     const [editLabelName, setEditLabelName] = useState<string>("")
 
@@ -52,6 +56,12 @@ export default function CardLabel({ name, id, color, onClick, size }: CardLabelP
             setLabelName(editLabelName)
             setIsOpenEditLabelModal(false)
         }
+    }
+
+    const handleDeleteLabel = async () => {
+        await useApi.deleteLabel(id)
+
+        setIsOpenEditLabelModal(false)
     }
 
     return (
@@ -70,6 +80,16 @@ export default function CardLabel({ name, id, color, onClick, size }: CardLabelP
 
                         <div className="mx-auto">
                             <Button onClick={handleEditLabelName}>Salvar</Button>
+                        </div>
+
+                        <div className="space-y-2">
+                            <h2 className="font-bold text-xl text-red-600">Excluir</h2>
+
+                            <div className="flex justify-between">
+                                <p className="text-black-200">Excluir permanentemente esta etiqueta.</p>
+
+                                <TrashIcon onClick={handleDeleteLabel} className="cursor-pointer hover:opacity-80"/>
+                            </div>
                         </div>
                     </Modal>
                 )
