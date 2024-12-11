@@ -529,6 +529,27 @@ export const useApi = {
         fieldErrors: error.error || null,
       };
     }
-  }
+  },
 
+  deleteTask: async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/task/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw errorResponse;
+      }
+    } catch (error: any) {
+      throw {
+        message: error.message || "Erro inesperado.",
+        fieldErrors: error.error || null,
+      };
+    }
+  }
 };

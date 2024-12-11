@@ -2,43 +2,45 @@
 
 import { Dispatch, SetStateAction, useState } from "react";
 
+import { useApi } from "@/hooks/useApi";
+
 import Calendar from "./calendar";
 
 import CalendarIcon from "../../public/CalendarEvent.svg";
 import CheckIcon from "../../public/Checked.svg";
 import PriorityIcon from "../../public/ExclamationCircle.svg";
-import UncheckIcon from "../../public/Unchecked.svg";
 import TrashIcon from "../../public/Trash.svg";
+import UncheckIcon from "../../public/Unchecked.svg";
 import PrioritySelect from "./prioritySelect";
-import { useApi } from "@/hooks/useApi";
-import Modal from "./modal";
 import Button from "./button";
+import Modal from "./modal";
 
 export interface CardTaskProps {
     taskProperties: {
-        id: number,
-        dateToComplete: Date | undefined,
-        isChecked: boolean,
-        name: string,
+        id: number
+        dateToComplete: Date | undefined
+        isChecked: boolean
+        name: string
         priority: number | null
     }
+    handleDeleteTask: (id: number) => void
 }
 
 interface TaskProps {
-    id: number,
-    dateToComplete: Date | undefined,
-    isChecked: boolean,
-    name: string,
+    id: number
+    dateToComplete: Date | undefined
+    isChecked: boolean
+    name: string
     priority: number | null
 }
 
-export default function CardTask({ taskProperties }: CardTaskProps) {
+export default function CardTask({ taskProperties, handleDeleteTask }: CardTaskProps) {
     const [task, setTask] = useState<TaskProps>(taskProperties)
 
     const priorityLabel = ['Baixa', 'Média', 'Alta']
 
     const [isOpenCalendarModal, setIsOpenCalendarModal] = useState<boolean>(false)
-    const [isOpenDeleteListModal, setIsOpenDeleteListModal] = useState<boolean>(false)
+    const [isOpenDeleteTaskModal, setIsOpenDeleteTaskModal] = useState<boolean>(false)
     const [isOpenPrioritySelect, setIsOpenPrioritySelect] = useState<boolean>(false)
 
     const openModal = (setOpen: Dispatch<SetStateAction<boolean>>) => {
@@ -119,7 +121,7 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
                     </div>
                 ) : (
                     <div>
-                        <TrashIcon />
+                        <TrashIcon onClick={() => openModal(setIsOpenDeleteTaskModal)} className="cursor-pointer hover:opacity-80"/>
                     </div>
                 )
             }
@@ -135,11 +137,16 @@ export default function CardTask({ taskProperties }: CardTaskProps) {
             }
 
             {
-                <Modal title="Excluir tarefa" onClose={() => setIsOpenDeleteListModal(false)}>
-                    <div>
-                        <Button>Excluir</Button>
-                    </div>
-                </Modal>
+                isOpenDeleteTaskModal && (
+                    <Modal title="Excluir tarefa" onClose={() => closeModal(setIsOpenDeleteTaskModal)}>
+                        <p>Você deseja excluir esta tarefa?</p>
+
+                        <div className="flex justify-center gap-5">
+                            <Button onClick={() => handleDeleteTask(task.id)}>Excluir</Button>
+                            <Button onClick={() => closeModal(setIsOpenDeleteTaskModal)} variant="secondary" >Cancelar</Button>
+                        </div>
+                    </Modal>
+                )
             }
         </div>
     )

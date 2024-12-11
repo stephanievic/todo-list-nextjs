@@ -163,6 +163,17 @@ export default function List() {
         )
     }
 
+    const handleDeleteTask = async (taskId: number) => {
+        // await useApi.deleteTask(taskId)
+
+        setList(prevList => 
+            prevList ? {
+                ...prevList,
+                task: prevList.task.filter(task => task.id !== taskId)
+            } : list
+        )
+    }
+
     const getList = async () => {
         const response = await useApi.getList(Number(id))
 
@@ -176,7 +187,7 @@ export default function List() {
             setLabels(labels)
         }
     }
-
+ 
     useEffect(() => {
         getList()
 
@@ -229,6 +240,7 @@ export default function List() {
                         <CardTask
                             key={index}
                             taskProperties={task}
+                            handleDeleteTask={handleDeleteTask}
                         />
                     ))
                 }
@@ -238,6 +250,7 @@ export default function List() {
                         <CardTask
                             key={index}
                             taskProperties={task}
+                            handleDeleteTask={handleDeleteTask}
                         />
                     ))
                 }
@@ -296,6 +309,7 @@ export default function List() {
                     </Modal>
                 )
             }
+
         </div>
     )
 }

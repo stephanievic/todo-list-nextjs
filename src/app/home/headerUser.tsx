@@ -17,7 +17,7 @@ export default function HeaderUser() {
                 <h1 className="text-4xl text-white-100 font-bold">Olá, {user?.name} 👋</h1>
             </div>
 
-            <p className="ml-[92px] text-xl text-purple-100">{weekdayOfToday}, {CurrentDate.toLocaleDateString()}</p>
+            <p className="text-xl text-purple-100">{weekdayOfToday}, {CurrentDate.toLocaleDateString()}</p>
         </div>
     )
 }

@@ -1,17 +1,17 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-
-import Modal from './modal'
-import Button from './button'
-
-import PlusCircleFill from '../../public/PlusCircleFill.svg'
-import LogOut from '../../public/BoxArrowRight.svg'
-import ArrowDown from '../../public/ArrowDown.svg'
 import { useRouter } from 'next/navigation'
-import { useUserStore } from '@/store/useUserStore'
+import { useState } from 'react'
+
+import Button from './button'
+import Modal from './modal'
+
+import LogOut from '../../public/BoxArrowRight.svg'
+import PlusCircleFill from '../../public/PlusCircleFill.svg'
+
 import { useApi } from '@/hooks/useApi'
+import { useUserStore } from '@/store/useUserStore'
 
 export default function Menu() {
     const user = useUserStore(state => state.user)
@@ -61,11 +61,7 @@ export default function Menu() {
 
             <div className='flex flex-1 flex-col justify-between'>
                 <div className='flex flex-col gap-7'>
-                    <div className='flex items-center justify-between'>
-                        <Link href={'/home'} className='text-2xl font-medium text-white-100 hover:text-purple-100'> Página inicial </Link>
-
-                        <ArrowDown />
-                    </div>
+                    <Link href={'/home'} className='text-2xl font-medium text-white-100 hover:text-purple-100'> Página inicial </Link>
 
                     <Link href={'/label'} className='text-2xl font-medium text-white-100 hover:text-purple-100'>Etiquetas</Link>
 

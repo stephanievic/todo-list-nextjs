@@ -19,8 +19,6 @@ export const useUserStore = create<UserStore>((set) => ({
     initializeUser: async() => {
         const response: User = await useApi.userLogged()
 
-        console.log(response)
-
         set({ user: response })
     }
 }))

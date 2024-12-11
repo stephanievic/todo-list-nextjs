@@ -7,7 +7,6 @@ export const config = {
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')
   
-  console.log('TOKEN: ', token)
   if (!token) {
      return NextResponse.redirect(new URL('/', request.url))
   }
