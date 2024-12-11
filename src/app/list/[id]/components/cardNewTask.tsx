@@ -47,7 +47,7 @@ export default function CardNewTask({ handleCreateNewTask }: CardNewTaskProps) {
     }
 
     return (
-        <div className="flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
+        <div className="z-0 flex flex-col gap-3 p-5 border border-white-100 rounded-lg">
             <input onChange={(e) => setTaskName(e.target.value)} type="text" placeholder="Criar nova tarefa" className="text-bold text-white-100 bg-transparent text-base placeholder:text-bold placeholder:text-white-100 placeholder:text-base outline-none" />
 
             <div className="flex justify-between">
@@ -58,7 +58,7 @@ export default function CardNewTask({ handleCreateNewTask }: CardNewTaskProps) {
                         <CalendarIcon />
                     </button>
 
-                    <div onClick={() => openModal(setIsOpenPrioritySelect)} className="w-fit relative flex gap-2 items-center px-3 py-2 rounded-lg text-xs cursor-pointer text-white-100 border border-white-100">
+                    <div onClick={() => openModal(setIsOpenPrioritySelect)} className="w-fit relative z-0 flex gap-2 items-center px-3 py-2 rounded-lg text-xs cursor-pointer text-white-100 border border-white-100">
                         {
                             taskPriority !== null ? priorityLabel[taskPriority] : 'Prioridade'
                         }

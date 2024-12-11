@@ -53,7 +53,7 @@ export default function Menu() {
     }
 
     return (
-        <nav className='w-[312px] fixed h-screen flex flex-col gap-9 bg-black-100 pt-[84px] pb-10 pl-8 pr-5 border-r border-white-100 border-opacity-5'>
+        <nav className='z-20 w-[312px] fixed h-screen flex flex-col gap-9 bg-black-100 pt-[84px] pb-10 pl-8 pr-5 border-r border-white-100 border-opacity-5'>
             <button onClick={addList} className="h-[52px] w-fit flex items-center px-6 bg-white-100 text-black-100 font-bold gap-2 rounded-[30px] hover:opacity-80">
                 <PlusCircleFill />
                 Criar lista
